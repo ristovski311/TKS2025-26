@@ -1,25 +1,25 @@
 import supabase from "../config/supabaseClient.js";
 
-export const createCourse = async (courseData) => {
+export const createFlashCard = async (flashCardData) => {
   const { data, error } = await supabase
-    .from("Course")
-    .insert([courseData])
+    .from("FlashCard")
+    .insert([flashCardData])
     .select();
 
   if (error) throw new Error(error.message);
   return data;
 };
 
-export const getCourses = async () => {
-  const { data, error } = await supabase.from("Course").select("*");
+export const getFlashCards = async () => {
+  const { data, error } = await supabase.from("FlashCard").select("*");
 
   if (error) throw new Error(error.message);
   return data;
 };
 
-export const getCourseById = async (id) => {
+export const getFlashCardById = async (id) => {
   const { data, error } = await supabase
-    .from("Course")
+    .from("FlashCard")
     .select("*")
     .eq("id", id)
     .single();
@@ -28,9 +28,9 @@ export const getCourseById = async (id) => {
   return data;
 };
 
-export const updateCourse = async (id, updates) => {
+export const updateFlashCard = async (id, updates) => {
   const { data, error } = await supabase
-    .from("Course")
+    .from("FlashCard")
     .update(updates)
     .eq("id", id)
     .select();
@@ -39,21 +39,21 @@ export const updateCourse = async (id, updates) => {
   return data;
 };
 
-export const deleteCourse = async (id) => {
+export const deleteFlashCard = async (id) => {
   const { error } = await supabase
-    .from("Course")
+    .from("FlashCard")
     .delete()
     .eq("id", id);
 
   if (error) throw new Error(error.message);
-  return { success: true, message: "Course deleted successfully" };
+  return { success: true, message: "Flash card deleted successfully" };
 };
 
-export const searchCourses = async (query) => {
+export const searchFlashCards = async (query) => {
   const { data, error } = await supabase
-    .from("Course")
+    .from("FlashCard")
     .select("*")
-    .ilike("title", `%${query}%`);
+    .ilike("question", `%${query}%`);
 
   if (error) throw new Error(error.message);
   return data;

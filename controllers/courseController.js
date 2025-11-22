@@ -30,10 +30,10 @@ export const fetchCourseById = async (req, res) => {
   try {
     const { id } = req.params;
     const course = await getCourseById(id);
-    if (!user) {
+    if (!course) {
       return res.status(404).json({ error: "User not found" });
     }
-    res.status(200).json(user);
+    res.status(200).json(course);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

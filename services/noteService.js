@@ -1,25 +1,25 @@
 import supabase from "../config/supabaseClient.js";
 
-export const createCourse = async (courseData) => {
+export const createNote = async (noteData) => {
   const { data, error } = await supabase
-    .from("Course")
-    .insert([courseData])
+    .from("Note")
+    .insert([noteData])
     .select();
 
   if (error) throw new Error(error.message);
   return data;
 };
 
-export const getCourses = async () => {
-  const { data, error } = await supabase.from("Course").select("*");
+export const getNotes = async () => {
+  const { data, error } = await supabase.from("Note").select("*");
 
   if (error) throw new Error(error.message);
   return data;
 };
 
-export const getCourseById = async (id) => {
+export const getNoteById = async (id) => {
   const { data, error } = await supabase
-    .from("Course")
+    .from("Note")
     .select("*")
     .eq("id", id)
     .single();
@@ -28,9 +28,9 @@ export const getCourseById = async (id) => {
   return data;
 };
 
-export const updateCourse = async (id, updates) => {
+export const updateNote = async (id, updates) => {
   const { data, error } = await supabase
-    .from("Course")
+    .from("Note")
     .update(updates)
     .eq("id", id)
     .select();
@@ -39,19 +39,19 @@ export const updateCourse = async (id, updates) => {
   return data;
 };
 
-export const deleteCourse = async (id) => {
+export const deleteNote = async (id) => {
   const { error } = await supabase
-    .from("Course")
+    .from("Note")
     .delete()
     .eq("id", id);
 
   if (error) throw new Error(error.message);
-  return { success: true, message: "Course deleted successfully" };
+  return { success: true, message: "Note deleted successfully" };
 };
 
-export const searchCourses = async (query) => {
+export const searchNotes = async (query) => {
   const { data, error } = await supabase
-    .from("Course")
+    .from("Note")
     .select("*")
     .ilike("title", `%${query}%`);
 

@@ -1,25 +1,25 @@
 import supabase from "../config/supabaseClient.js";
 
-export const createCourse = async (courseData) => {
+export const createFlashDeck = async (flashDeckData) => {
   const { data, error } = await supabase
-    .from("Course")
-    .insert([courseData])
+    .from("FlashDeck")
+    .insert([flashDeckData])
     .select();
 
   if (error) throw new Error(error.message);
   return data;
 };
 
-export const getCourses = async () => {
-  const { data, error } = await supabase.from("Course").select("*");
+export const getFlashDecks = async () => {
+  const { data, error } = await supabase.from("FlashDeck").select("*");
 
   if (error) throw new Error(error.message);
   return data;
 };
 
-export const getCourseById = async (id) => {
+export const getFlashDeckById = async (id) => {
   const { data, error } = await supabase
-    .from("Course")
+    .from("FlashDeck")
     .select("*")
     .eq("id", id)
     .single();
@@ -28,9 +28,9 @@ export const getCourseById = async (id) => {
   return data;
 };
 
-export const updateCourse = async (id, updates) => {
+export const updateFlashDeck = async (id, updates) => {
   const { data, error } = await supabase
-    .from("Course")
+    .from("FlashDeck")
     .update(updates)
     .eq("id", id)
     .select();
@@ -39,19 +39,19 @@ export const updateCourse = async (id, updates) => {
   return data;
 };
 
-export const deleteCourse = async (id) => {
+export const deleteFlashDeck = async (id) => {
   const { error } = await supabase
-    .from("Course")
+    .from("FlashDeck")
     .delete()
     .eq("id", id);
 
   if (error) throw new Error(error.message);
-  return { success: true, message: "Course deleted successfully" };
+  return { success: true, message: "Flash deck deleted successfully" };
 };
 
-export const searchCourses = async (query) => {
+export const searchFlashDecks = async (query) => {
   const { data, error } = await supabase
-    .from("Course")
+    .from("FlashDeck")
     .select("*")
     .ilike("title", `%${query}%`);
 

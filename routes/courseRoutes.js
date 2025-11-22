@@ -35,6 +35,12 @@ const router = express.Router();
  *         grade:
  *           type: integer
  *           description: Grade of the course
+ *         user_id:
+ *           type: integer
+ *           description: ID of the user that created this subject
+ *         professor_id:
+ *           type: integer
+ *           description: ID of the professor that teaches this subject
  */
 
 /**
