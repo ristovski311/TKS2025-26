@@ -79,8 +79,8 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-router.post("/courses", addCourse);
-router.get("/courses", fetchCourses);
+router.post("/", addCourse);
+router.get("/", fetchCourses);
 
 /**
  * @swagger
@@ -109,7 +109,7 @@ router.get("/courses", fetchCourses);
  *       500:
  *         description: Server error
  */
-router.get("/courses/search", findCourses);
+router.get("/search", findCourses);
 
 /**
  * @swagger
@@ -178,8 +178,8 @@ router.get("/courses/search", findCourses);
  *       500:
  *         description: Server error
  */
-router.get("/courses/:id", fetchCourseById);
-router.put("/courses/:id", modifyCourse);
-router.delete("/courses/:id", removeCourse);
+router.get("/:id", fetchCourseById);
+router.put("/:id", modifyCourse);
+router.delete("/:id", removeCourse);
 
 export default router;

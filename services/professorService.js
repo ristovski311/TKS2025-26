@@ -2,7 +2,7 @@ import supabase from "../config/supabaseClient.js"
 
 export const createProfessor = async (professorData) => {
     const { data, error } = await supabase
-        .from("Task")
+        .from("Professor")
         .insert([professorData])
         .select();
 
@@ -12,7 +12,7 @@ export const createProfessor = async (professorData) => {
 
 export const getProfessors = async () => {
     const { data, error } = await supabase
-        .from("Task")
+        .from("Professor")
         .select("*");
 
     if (error) throw new Error(error.message);
@@ -21,7 +21,7 @@ export const getProfessors = async () => {
 
 export const getProfessorById = async (id) => {
     const { data, error } = await supabase
-        .from("Task")
+        .from("Professor")
         .select("*")
         .eq("id", id)
         .single();
@@ -32,7 +32,7 @@ export const getProfessorById = async (id) => {
 
 export const updateProfessor = async (id, updates) => {
     const { data, error } = await supabase
-        .from("Task")
+        .from("Professor")
         .update(updates)
         .eq("id", id)
         .select();
@@ -43,7 +43,7 @@ export const updateProfessor = async (id, updates) => {
 
 export const deleteProfessor = async (id) => {
     const { data, error } = await supabase
-        .from("Task")
+        .from("Professor")
         .delete()
         .eq("id", id);
 
@@ -53,7 +53,7 @@ export const deleteProfessor = async (id) => {
 
 export const searchProfessors = async (query) => {
     const { data, error } = await supabase
-        .from("Task")
+        .from("Professor")
         .select("*")
         .ilike("title", `%${query}%`);
 

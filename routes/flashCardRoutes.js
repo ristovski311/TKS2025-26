@@ -73,8 +73,8 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-router.post("/flashcards", addFlashCard);
-router.get("/flashcards", fetchFlashCards);
+router.post("/", addFlashCard);
+router.get("/", fetchFlashCards);
 
 /**
  * @swagger
@@ -103,7 +103,7 @@ router.get("/flashcards", fetchFlashCards);
  *       500:
  *         description: Server error
  */
-router.get("/flashcards/search", findFlashCards);
+router.get("/search", findFlashCards);
 
 /**
  * @swagger
@@ -172,8 +172,8 @@ router.get("/flashcards/search", findFlashCards);
  *       500:
  *         description: Server error
  */
-router.get("/flashcards/:id", fetchFlashCardById);
-router.put("/flashcards/:id", modifyFlashCard);
-router.delete("/flashcards/:id", removeFlashCard);
+router.get("/:id", fetchFlashCardById);
+router.put("/:id", modifyFlashCard);
+router.delete("/:id", removeFlashCard);
 
 export default router;

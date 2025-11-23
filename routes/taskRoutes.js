@@ -85,8 +85,8 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-router.post("/tasks", addTask);
-router.get("/tasks", fetchTasks);
+router.post("/", addTask);
+router.get("/", fetchTasks);
 
 /**
  * @swagger
@@ -115,7 +115,7 @@ router.get("/tasks", fetchTasks);
  *       500:
  *         description: Server error
  */
-router.get("/tasks/search", findTasks);
+router.get("/search", findTasks);
 
 /**
  * @swagger
@@ -184,8 +184,8 @@ router.get("/tasks/search", findTasks);
  *       500:
  *         description: Server error
  */
-router.get("/tasks/:id", fetchTaskById);
-router.put("/tasks/:id", modifyTask);
-router.delete("/tasks/:id", removeTask);
+router.get("/:id", fetchTaskById);
+router.put("/:id", modifyTask);
+router.delete("/:id", removeTask);
 
 export default router;

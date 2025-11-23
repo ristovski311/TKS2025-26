@@ -79,8 +79,8 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-router.post("/flashdecks", addFlashDeck);
-router.get("/flashdecks", fetchFlashDecks);
+router.post("/", addFlashDeck);
+router.get("/", fetchFlashDecks);
 
 /**
  * @swagger
@@ -109,7 +109,7 @@ router.get("/flashdecks", fetchFlashDecks);
  *       500:
  *         description: Server error
  */
-router.get("/flashdecks/search", findFlashDecks);
+router.get("/search", findFlashDecks);
 
 /**
  * @swagger
@@ -178,8 +178,8 @@ router.get("/flashdecks/search", findFlashDecks);
  *       500:
  *         description: Server error
  */
-router.get("/flashdecks/:id", fetchFlashDeckById);
-router.put("/flashdecks/:id", modifyFlashDeck);
-router.delete("/flashdecks/:id", removeFlashDeck);
+router.get("/:id", fetchFlashDeckById);
+router.put("/:id", modifyFlashDeck);
+router.delete("/:id", removeFlashDeck);
 
 export default router;
