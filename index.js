@@ -8,6 +8,7 @@ import courseRoutes from "./routes/courseRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js";
 import flashCardRoutes from "./routes/flashCardRoutes.js";
 import flashDeckRoutes from "./routes/flashDeckRoutes.js"
+import authRoutes from "./routes/authRoutes.js";
 import { swaggerUi, specs } from "./config/swagger.js";
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.use("/api/notes", noteRoutes);
 app.use("/api/flashCards", flashCardRoutes);
 app.use("/api/flashDecks", flashDeckRoutes);
 app.use("/api/courses", courseRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running... <a href='/api-docs'>View API documentation</a>");
