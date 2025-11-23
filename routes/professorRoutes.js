@@ -43,7 +43,7 @@ const router = express.Router();
  * @swagger
  * /api/professors:
  *   post:
- *     summary: Create a nre professor
+ *     summary: Create a new professor
  *     tags: [Professors]
  *     requestBody:
  *       required: true
@@ -60,20 +60,20 @@ const router = express.Router();
  *               $ref: '#/components/schemas/Professor'
  *       400:
  *         description: Invalid input
- *   get:
- *    summary: Get all professors
- *     tags: [Professors]
- *     responses:
- *       200:
- *         description: List of all professors
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Professor'
- *       500:
- *         description: Server error
+ *     get:
+ *       summary: Get all professors
+ *       tags: [Professors]
+ *       responses:
+ *           200:
+ *             description: List of all professors
+ *             content:
+ *               application/json:
+ *                 schema:
+ *                   type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/Professor'
+ *           500:
+ *             description: Server error
  */
 router.post("/professors", addProfessor);
 router.get("/professors", fetchProfessors);

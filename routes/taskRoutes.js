@@ -92,7 +92,7 @@ router.get("/tasks", fetchTasks);
  * @swagger
  * /api/tasks/search:
  *   get:
- *     summary: Search for tasks by username
+ *     summary: Search for tasks by their title
  *     tags: [Tasks]
  *     parameters:
  *       - in: query
