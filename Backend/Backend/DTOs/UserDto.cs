@@ -51,4 +51,48 @@ namespace Backend.DTOs
         [Phone(ErrorMessage = "Invalid phone number format")]
         public string? Phone { get; set; }
     }
+
+    public class RegisterDto
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(100, MinimumLength = 6)]
+        public string Password { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(50, MinimumLength = 3)]
+        public string Username { get; set; } = string.Empty;
+
+        [Required]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required]
+        public string LastName { get; set; } = string.Empty;
+
+        [Range(1, 12)]
+        public int Semester { get; set; }
+
+        [Phone]
+        public string? Phone { get; set; }
+    }
+
+    public class LoginDto
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        public string Password { get; set; } = string.Empty;
+    }
+
+    public class AuthResponseDto
+    {
+        public string AccessToken { get; set; } = string.Empty;
+        public string RefreshToken { get; set; } = string.Empty;
+        public UserDto User { get; set; } = null!;
+    }
 }

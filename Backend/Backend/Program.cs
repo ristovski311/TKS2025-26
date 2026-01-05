@@ -1,4 +1,5 @@
 using Backend.Repositories;
+using Backend.Services;
 using Supabase;
 using System.Reflection;
 
@@ -11,6 +12,8 @@ builder.Services.AddControllers();
 //builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddCors(options =>
 {

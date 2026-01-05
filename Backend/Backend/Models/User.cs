@@ -12,6 +12,12 @@ namespace Backend.Models
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
 
+        [Column("auth_user_id")] 
+        public string? AuthUserId { get; set; }
+
+        [Column("email")]
+        public string Email { get; set; } = string.Empty;
+
         [Column("username")]
         public string Username { get; set; } = string.Empty;
 

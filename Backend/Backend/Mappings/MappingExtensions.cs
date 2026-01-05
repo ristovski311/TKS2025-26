@@ -6,6 +6,7 @@ namespace Backend.Mappings
     public static class MappingExtensions
     {
         // User Mappings
+
         public static UserDto ToDto(this User user)
         {
             return new UserDto
