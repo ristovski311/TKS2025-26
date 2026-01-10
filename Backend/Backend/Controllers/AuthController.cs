@@ -1,6 +1,7 @@
 ﻿using Backend.DTOs;
 using Backend.Mappings;
 using Backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers
@@ -54,12 +55,12 @@ namespace Backend.Controllers
                 return BadRequest(new { message = "Logout failed" });
         }
 
+        [Authorize]
         [HttpGet("me")]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
             var user = await _authService.GetCurrentUserAsync();
-            if (user == null)
-                return Unauthorized(new { message = "Not authenticated" });
+            if (user == null) return Unauthorized();
 
             return Ok(user.ToDto());
         }
