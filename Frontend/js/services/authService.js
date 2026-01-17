@@ -1,38 +1,39 @@
-// authService.js
-// Pošto ne možemo koristiti localStorage u artifacts,
-// koristimo in-memory storage za token
-
-let authToken = null;
+let authToken = localStorage.getItem("app_token");
 
 export function setToken(token) {
     authToken = token;
-    console.log("🔐 Token set in authService:", token ? "YES" : "NO"); // DEBUG
+    if(token){
+        localStorage.setItem("app_token", token);
+    }
+    else{
+        localStorage.removeItem("app_token");
+    }
+    console.log("Token saved in localStorage")
 }
 
 export function getToken() {
-    console.log("🔍 Getting token:", authToken ? authToken.substring(0, 20) + "..." : "NULL"); // DEBUG
     return authToken;
 }
 
 export function clearToken() {
     authToken = null;
-    console.log("🗑️ Token cleared"); // DEBUG
+    localStorage.removeItem("app_token");
+    console.log("Successfully removed token!")
 }
 
 export function isAuthenticated() {
-    return authToken !== null;
+    return authToken !== null && authToken !== "undefined";
 }
 
 export function getAuthHeaders() {
+    const token = getToken()
     const headers = {
         "Content-Type": "application/json"
-    };
-    
-    if (authToken) {
+    };    
+    if (token) {
         headers["Authorization"] = `Bearer ${authToken}`;
-        console.log("✅ Authorization header added"); // DEBUG
     } else {
-        console.warn("⚠️ No token available for auth header!"); // DEBUG
+        console.warn("No token available for auth header!");
     }
     
     return headers;

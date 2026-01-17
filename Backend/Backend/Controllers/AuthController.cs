@@ -59,8 +59,12 @@ namespace Backend.Controllers
         [HttpGet("me")]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
-            var user = await _authService.GetCurrentUserAsync();
-            if (user == null) return Unauthorized();
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
+
+            if (string.IsNullOrEmpty(userId)) return Unauthorized("Token has no userID");
+
+            var user = await _authService.GetCurrentUserAsync(userId);
+            if (user == null) return NotFound("User not found");
 
             return Ok(user.ToDto());
         }

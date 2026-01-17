@@ -93,17 +93,13 @@ namespace Backend.Services
             }
         }
 
-        public async Task<User?> GetCurrentUserAsync()
+        public async Task<User?> GetCurrentUserAsync(string userId)
         {
             try
             {
-                var currentAuthUser = _supabase.Auth.CurrentUser;
-                if (currentAuthUser == null) return null;
-
                 var user = await _supabase.From<User>()
-                    .Where(u => u.AuthUserId == currentAuthUser.Id)
+                    .Where(u => u.AuthUserId == userId)
                     .Single();
-
                 return user;
             }
             catch

@@ -77,7 +77,6 @@ builder.Services.AddAuthentication(options => {
         ValidAudience = "authenticated"
     };
 
-    // DODAJ OVE EVENTE ZA DEBUGGING
     options.Events = new JwtBearerEvents
     {
         OnAuthenticationFailed = context =>

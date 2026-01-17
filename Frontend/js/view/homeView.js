@@ -2,6 +2,7 @@ import { formatDate } from '../misc/utils.js';
 import { createElement, createHomeButton, clearRoot } from '../misc/domHelpers.js';
 import { logoutUser, getCurrentUser } from '../services/apiService.js';
 import { renderLogin } from './loginView.js';
+import {renderCourses} from './coursesView.js';
 
 export async function renderHome() {
     clearRoot();
@@ -30,6 +31,7 @@ export async function renderHome() {
     const buttonRow = createElement("div", "home-button-row");
 
     const coursesBtn = createHomeButton("My courses");
+    coursesBtn.addEventListener("click", handleCourses);
     const notesBtn = createHomeButton("Notes");
     const calendarBtn = createHomeButton("Calendar");
 
@@ -46,7 +48,8 @@ async function loadCurrentUser(greetingElement) {
         const user = await getCurrentUser();
         greetingElement.textContent = `Hi, ${user.username}!`;
     } catch (error) {
-        console.error("Failed to load user:", error);
+        console.error("Session expired or invalid!", error);
+        await handleLogout();
         greetingElement.textContent = "Hi, Guest!";
     }
 }
@@ -54,4 +57,8 @@ async function loadCurrentUser(greetingElement) {
 async function handleLogout() {
     await logoutUser();
     renderLogin();
+}
+
+async function handleCourses(){
+    renderCourses();
 }
