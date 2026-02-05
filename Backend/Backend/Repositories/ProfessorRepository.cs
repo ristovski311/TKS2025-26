@@ -17,6 +17,11 @@ namespace Backend.Repositories
             var response = await _supabase.From<Professor>().Get();
             return response.Models;
         }
+        public async Task<IEnumerable<Professor>> GetAllByUserIdAsync(int UserId)
+        {
+            var response = await _supabase.From<Professor>().Where(p => p.UserId == UserId).Get();
+            return response.Models;
+        }
 
         public async Task<Professor?> GetByIdAsync(int id)
         {

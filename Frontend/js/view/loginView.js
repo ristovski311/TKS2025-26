@@ -4,6 +4,7 @@ import { renderRegister } from './registerView.js';
 import { renderHome } from './homeView.js';
 
 export function renderLogin() {
+    localStorage.setItem("current_page", "login");
     clearRoot();
     const root = document.getElementById("root");
 

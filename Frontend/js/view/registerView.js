@@ -3,6 +3,7 @@ import { registerUser } from '../services/apiService.js';
 import { renderLogin } from './loginView.js';
 
 export function renderRegister() {
+    localStorage.setItem("current_page", "register")
     clearRoot();
     const root = document.getElementById("root");
 

@@ -11,6 +11,7 @@ namespace Backend.DTOs
         public string? Mail { get; set; }
         public string? Phone { get; set; }
         public string? Office { get; set; }
+        public int UserId { get; set; }
     }
 
     public class CreateProfessorDto
@@ -31,6 +32,9 @@ namespace Backend.DTOs
 
         [StringLength(50, ErrorMessage = "Office cannot exceed 50 characters")]
         public string? Office { get; set; }
+
+        [Required(ErrorMessage = "User ID is required")]
+        public int UserId { get; set; }
     }
 
     public class UpdateProfessorDto
@@ -49,5 +53,8 @@ namespace Backend.DTOs
 
         [StringLength(50, ErrorMessage = "Office cannot exceed 50 characters")]
         public string? Office { get; set; }
+
+        [Required(ErrorMessage = "User ID is required")]
+        public int UserId { get; set; }
     }
 }

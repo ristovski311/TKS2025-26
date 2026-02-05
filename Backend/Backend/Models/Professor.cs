@@ -26,5 +26,8 @@ namespace Backend.Models
 
         [Column("office")]
         public string? Office { get; set; }
+
+        [Column("user_id")]
+        public int UserId { get; set; }
     }
 }

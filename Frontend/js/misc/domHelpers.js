@@ -1,3 +1,7 @@
+import { renderLogin } from '../view/loginView.js';
+import { renderHome } from '../view/homeView.js';
+import { formatDate } from './utils.js'
+
 export function clearRoot() {
     const root = document.getElementById("root");
     if (root) {
@@ -42,4 +46,26 @@ export function createElement(tag, className, textContent = "") {
     if (className) el.className = className;
     if (textContent) el.textContent = textContent;
     return el;
+}
+
+export function createHeader() {
+    const header = createElement("header", "main-header");
+    header.addEventListener("click", renderHome); 
+    const title = createElement("h1", "app-title", "NoteIT!");
+    const rightSection = createElement("div", "header-right");
+
+    const date = createElement("span", "header-date", formatDate(new Date()));
+    
+    const logoutBtn = document.createElement("button");
+    logoutBtn.className = "logout-button";
+    logoutBtn.textContent = "Logout";
+    logoutBtn.addEventListener("click", async () => {
+        await logoutUser();
+        renderLogin();
+    });
+
+    rightSection.append(date, logoutBtn);
+    header.append(title, rightSection);
+    
+    return header;
 }

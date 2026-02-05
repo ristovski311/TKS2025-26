@@ -54,7 +54,8 @@ namespace Backend.Mappings
                 LastName = professor.LastName,
                 Mail = professor.Mail,
                 Phone = professor.Phone,
-                Office = professor.Office
+                Office = professor.Office,
+                UserId = professor.UserId 
             };
         }
 
@@ -67,7 +68,8 @@ namespace Backend.Mappings
                 Mail = dto.Mail,
                 Phone = dto.Phone,
                 Office = dto.Office,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                UserId = dto.UserId
             };
         }
 
@@ -78,6 +80,7 @@ namespace Backend.Mappings
             if (dto.Mail != null) professor.Mail = dto.Mail;
             if (dto.Phone != null) professor.Phone = dto.Phone;
             if (dto.Office != null) professor.Office = dto.Office;
+            professor.UserId = dto.UserId;
         }
 
         // Course Mappings

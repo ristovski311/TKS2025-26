@@ -14,5 +14,6 @@ export const API_ENDPOINTS = {
     LOGOUT: `${API_BASE}/Auth/logout`,
     CURR_USER: `${API_BASE}/Auth/me`,
     COURSES: `${API_BASE}/Courses`,
-    PROFESSORS: `${API_BASE}/Professors`
+    PROFESSORS: `${API_BASE}/Professors`,
+    PROFESSORS_BY_USER: (userId) => `${API_BASE}/Professors/userId/${userId}`
 };

@@ -5,6 +5,7 @@ import { renderLogin } from './loginView.js';
 import {renderCourses} from './coursesView.js';
 
 export async function renderHome() {
+    localStorage.setItem("current_page", "home")
     clearRoot();
     const root = document.getElementById("root");
 

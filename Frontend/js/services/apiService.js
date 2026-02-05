@@ -108,3 +108,42 @@ export async function getProfessorById(professorId) {
         throw err;
     }
 }
+
+export async function getProfessorsByUserId(userId) {
+    try {
+        const response = await fetch(API_ENDPOINTS.PROFESSORS_BY_USER(userId), {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include"
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch professors for user");
+        }
+
+        return await response.json();
+    } catch (err) {
+        console.error("Cannot get professors by user:", err);
+        throw err;
+    }
+}
+
+export async function createCourse(courseData) {
+    try {
+        const response = await fetch(API_ENDPOINTS.COURSES, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(courseData)
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to create course");
+        }
+
+        return await response.json();
+    } catch (err) {
+        console.error("Cannot create course:", err);
+        throw err;
+    }
+}
