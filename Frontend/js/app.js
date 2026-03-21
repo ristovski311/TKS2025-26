@@ -3,6 +3,7 @@ import { renderHome } from './view/homeView.js';
 import { renderLogin } from './view/loginView.js';
 import { renderCourses } from './view/coursesView.js';
 import { renderRegister } from './view/registerView.js';
+import { renderCalendar } from './view/calendarView.js';
 
 function initApp(){
     if(isAuthenticated()){
@@ -27,7 +28,7 @@ function initApp(){
                 renderHome();
                 break;
             case "calendar":
-                renderHome();
+                renderCalendar();
                 break;
             default:
                 renderLogin();

@@ -1,10 +1,11 @@
 import { clearRoot, createInput, createButton, createError, createElement } from '../misc/domHelpers.js';
-import { loginUser } from '../services/apiService.js';
+import { loginUser } from '../services/userService.js';
 import { renderRegister } from './registerView.js';
 import { renderHome } from './homeView.js';
 
 export function renderLogin() {
     localStorage.setItem("current_page", "login");
+    
     clearRoot();
     const root = document.getElementById("root");
 
@@ -21,8 +22,8 @@ export function renderLogin() {
     form.append(emailInput, passwordInput, button);
     form.addEventListener("submit", handleLogin);
 
-    const switchText = createElement("p", "auth-switch", "Nemate nalog? ");
-    const link = createElement("span", "auth-link", "Registrujte se");
+    const switchText = createElement("p", "auth-switch", "Nemate nalog?");
+    const link = createElement("span", "auth-link", " Registrujte se");
     link.addEventListener("click", renderRegister);
     switchText.appendChild(link);
 
@@ -41,11 +42,20 @@ async function handleLogin(e) {
     const email = document.querySelector(".login-email").value;
     const password = document.querySelector(".login-pass").value;
 
+    const button = form.querySelector("button");
+    
+    const originalText = button.textContent;
+
+    button.disabled = true;
+    button.innerHTML = `<div class="btn-loader"></div>`;
+    
     try {
         const data = await loginUser(email, password);
         console.log("Login success:", data);
         renderHome();
     } catch (err) {
+        button.disabled = false;
+        button.textContent = originalText;
         form._error.textContent = err.message;
     }
 }

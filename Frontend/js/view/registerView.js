@@ -1,9 +1,10 @@
 import { clearRoot, createInput, createButton, createError, createElement } from '../misc/domHelpers.js';
-import { registerUser } from '../services/apiService.js';
+import { registerUser } from '../services/userService.js';
 import { renderLogin } from './loginView.js';
 
 export function renderRegister() {
-    localStorage.setItem("current_page", "register")
+    localStorage.setItem("current_page", "register");
+
     clearRoot();
     const root = document.getElementById("root");
 
@@ -26,8 +27,8 @@ export function renderRegister() {
     form.append(username, email, password, firstName, lastName, semester, phone, button);
     form.addEventListener("submit", handleRegister);
 
-    const switchText = createElement("p", "auth-switch", "Već imate nalog? ");
-    const link = createElement("span", "auth-link", "Prijavite se");
+    const switchText = createElement("p", "auth-switch", "Vec imate nalog?");
+    const link = createElement("span", "auth-link", " Prijavite se");
     link.addEventListener("click", renderLogin);
     switchText.appendChild(link);
 
@@ -43,6 +44,12 @@ async function handleRegister(e) {
 
     const form = e.target;
 
+    const button = form.querySelector("button");
+    const oldText = button.innerHTML;
+
+    button.disabled = true;
+    button.innerHTML = '<div class="btn-loader"></div>'
+
     const userData = {
         username: form.querySelector(".register-username").value,
         email: form.querySelector(".register-email").value,
@@ -57,6 +64,8 @@ async function handleRegister(e) {
         await registerUser(userData);
         renderLogin();
     } catch (err) {
+        button.disabled = false;
+        button.textContent = oldText;
         form._error.textContent = err.message;
     }
 }
