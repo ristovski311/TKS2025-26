@@ -877,3 +877,24 @@ body {
         gap: 4px;
     }
 }
+
+.main-nav {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.main-nav-item {
+    flex: 1;
+    color: #4f46e5;
+    background-color: white;
+    padding: 10px;
+    font-size: 2.5vh;
+    font-weight: bold;
+    border: 1px solid rgb(181, 173, 173);
+}
+
+.main-nav-item.main-nav-item-selected {
+    background-color: #4f46e5;
+    color: white;
+}

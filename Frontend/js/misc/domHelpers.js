@@ -1,5 +1,7 @@
 import { renderLogin } from '../view/loginView.js';
 import { renderHome } from '../view/homeView.js';
+import { renderCourses } from '../view/coursesView.js'
+import { renderCalendar } from '../view/calendarView.js'
 import { formatDate } from './utils.js'
 import { logoutUser} from '../services/userService.js';
 
@@ -93,7 +95,6 @@ export function createConfirmModal(message, onConfirm, onCancel) {
 
     header.append(title, closeBtn);
 
-    // MESSAGE
     const text = document.createElement("p");
     text.style.textAlign = "center";
     text.style.marginBottom = "20px";
@@ -101,7 +102,6 @@ export function createConfirmModal(message, onConfirm, onCancel) {
     text.style.color = "#555";
     text.textContent = message;
 
-    // ACTIONS
     const actions = document.createElement("div");
     actions.className = "form-actions";
 
@@ -158,4 +158,48 @@ export function createLoader() {
     const loader = document.createElement("div");
     loader.className = "loader";
     return loader;
+}
+
+export function createNavBar()
+{
+    const navBar = createElement("nav", "main-nav");
+
+    const navItemHome = createElement("button", "main-nav-item main-nav-item-home", "Home");
+    const navItemCourses = createElement("button", "main-nav-item main-nav-item-courses", "Courses");
+    const navItemNotes = createElement("button", "main-nav-item main-nav-item-notes", "Notes");
+    const navItemCalendar = createElement("button", "main-nav-item main-nav-item-calendar", "Calendar");
+    
+    navBar.append(navItemHome, navItemCourses, navItemNotes, navItemCalendar);
+
+    navItemHome.addEventListener("click", renderHome);
+    navItemCourses.addEventListener("click", renderCourses)
+    navItemCalendar.addEventListener("click", renderCalendar)
+    navItemNotes.addEventListener("click", () => {console.log("NotImplemented")})
+    
+    applySelected(navBar);
+
+    return navBar;
+}
+
+function applySelected(navbar)
+{
+    const currentPage = localStorage.getItem("current_page") || "home";
+
+    const map = {
+        home: ".main-nav-item-home",
+        courses: ".main-nav-item-courses",
+        calendar: ".main-nav-item-calendar",
+        notes: ".main-nav-item-notes"
+    };
+
+    const selectedSelector = map[currentPage];
+
+    if (!selectedSelector) return;
+
+    const selectedItem = navbar.querySelector(selectedSelector);
+
+    if (selectedItem)
+    {
+        selectedItem.classList.add("main-nav-item-selected");
+    }
 }

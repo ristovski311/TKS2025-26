@@ -1,4 +1,4 @@
-import { createElement, createHomeButton, clearRoot, createHeader, createLoader } from '../misc/domHelpers.js';
+import { createElement, createHomeButton, clearRoot, createHeader, createLoader, createNavBar } from '../misc/domHelpers.js';
 import { getCurrentUser } from '../services/userService.js';
 import {renderCourses} from './coursesView.js';
 import {renderCalendar} from './calendarView.js'
@@ -11,6 +11,7 @@ export async function renderHome() {
     const root = document.getElementById("root");
 
     const header = createHeader();
+    const nav = createNavBar();
 
     const content = createElement("main", "main-content");
     
@@ -19,20 +20,10 @@ export async function renderHome() {
     greeting.appendChild(createLoader());   
     loadCurrentUser(greeting);
 
-    const buttonRow = createElement("div", "home-button-row");
-
-    const coursesBtn = createHomeButton("My courses");
-    coursesBtn.addEventListener("click", handleCourses);
-    const notesBtn = createHomeButton("Notes");
-    const calendarBtn = createHomeButton("Calendar");
-    calendarBtn.addEventListener("click", hangleCalendar);
-
-    buttonRow.append(coursesBtn, notesBtn, calendarBtn);
-
     const centerText = createElement("h2", "home-center-text", "What is up today?");
 
-    content.append(greeting, centerText, buttonRow);
-    root.append(header, content);
+    content.append(greeting, centerText);
+    root.append(header, nav, content);
 }
 
 async function loadCurrentUser(greetingElement) {

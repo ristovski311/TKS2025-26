@@ -1,6 +1,5 @@
-// calendarView.js
 import { formatDate } from '../misc/utils.js';
-import { clearRoot,createElement } from '../misc/domHelpers.js';
+import { clearRoot,createElement, createNavBar } from '../misc/domHelpers.js';
 import { logoutUser} from '../services/userService.js';
 import { renderLogin } from './loginView.js';
 import { renderHome } from './homeView.js';
@@ -15,7 +14,8 @@ export async function renderCalendar() {
 
     // Header
     const header = createHeader();
-    root.appendChild(header);
+    const nav = createNavBar();    
+    root.append(header, nav);
 
     const content = createElement("main", "main-content");
     

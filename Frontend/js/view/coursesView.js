@@ -1,4 +1,4 @@
-import { createElement, clearRoot, createSkeletonCard } from '../misc/domHelpers.js';
+import { createElement, clearRoot, createSkeletonCard, createNavBar } from '../misc/domHelpers.js';
 import { getCurrentUser } from '../services/userService.js';
 import { getProfessorById, getProfessorsByUserId } from '../services/professorService.js';
 import { getCourses, createCourse, updateCourse } from '../services/courseService.js'
@@ -11,7 +11,8 @@ export async function renderCourses() {
     const root = document.getElementById("root");
 
     const header = createHeader();
-    root.appendChild(header);
+    const nav = createNavBar();    
+    root.append(header, nav);
 
     const content = createElement("main", "main-content");
     
