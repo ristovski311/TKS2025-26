@@ -5,7 +5,8 @@ export const ROUTES = {
     REGISTER: 'register',
     HOME: 'home',
     COURSES: 'courses',
-    PROFESSORS: 'professors'
+    PROFESSORS: 'professors',
+    TASKS: 'tasks'
 };
 
 export const API_ENDPOINTS = {
@@ -15,5 +16,6 @@ export const API_ENDPOINTS = {
     CURR_USER: `${API_BASE}/Auth/me`,
     COURSES: `${API_BASE}/Courses`,
     PROFESSORS: `${API_BASE}/Professors`,
-    PROFESSORS_BY_USER: (userId) => `${API_BASE}/Professors/userId/${userId}`
+    PROFESSORS_BY_USER: (userId) => `${API_BASE}/Professors/userId/${userId}`,
+    TASKS: `${API_BASE}/Tasks`
 };
