@@ -161,8 +161,8 @@ namespace Backend.Mappings
             if (dto.Description != null) note.Description = dto.Description;
             if (dto.Content != null) note.Content = dto.Content;
             if (dto.Type != null) note.Type = dto.Type;
-            if (dto.CourseId.HasValue) note.CourseId = dto.CourseId.Value;
-            if (dto.ParentId.HasValue) note.ParentId = dto.ParentId.Value;
+            note.CourseId = dto.CourseId;
+            note.ParentId = dto.ParentId;
             note.LastUpdated = DateTime.UtcNow;
         }
 

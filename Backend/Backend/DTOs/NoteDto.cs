@@ -11,7 +11,7 @@ namespace Backend.DTOs
         public string? Content { get; set; }
         public DateTime LastUpdated { get; set; }
         public string Type { get; set; } = string.Empty;
-        public int CourseId { get; set; }
+        public int? CourseId { get; set; }
         public int? ParentId { get; set; }
     }
 
@@ -30,8 +30,7 @@ namespace Backend.DTOs
         [StringLength(50, ErrorMessage = "Type cannot exceed 50 characters")]
         public string Type { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Course ID is required")]
-        public int CourseId { get; set; }
+        public int? CourseId { get; set; }
 
         public int? ParentId { get; set; }
     }

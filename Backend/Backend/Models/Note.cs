@@ -28,7 +28,7 @@ namespace Backend.Models
         public string Type { get; set; } = string.Empty;
 
         [Column("course_id")]
-        public int CourseId { get; set; }
+        public int? CourseId { get; set; }
 
         [Column("parent_id")]
         public int? ParentId { get; set; }

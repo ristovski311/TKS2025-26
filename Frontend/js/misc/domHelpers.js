@@ -1,6 +1,7 @@
 import { renderLogin } from '../view/loginView.js';
 import { renderHome } from '../view/homeView.js';
 import { renderCourses } from '../view/coursesView.js'
+import { renderNotes } from '../view/notesView.js'
 import { renderCalendar } from '../view/calendarView.js'
 import { formatDate } from './utils.js'
 import { logoutUser} from '../services/userService.js';
@@ -174,7 +175,7 @@ export function createNavBar()
     navItemHome.addEventListener("click", renderHome);
     navItemCourses.addEventListener("click", renderCourses)
     navItemCalendar.addEventListener("click", renderCalendar)
-    navItemNotes.addEventListener("click", () => {console.log("NotImplemented")})
+    navItemNotes.addEventListener("click", renderNotes)
     
     applySelected(navBar);
 
