@@ -61,7 +61,8 @@ export async function renderCourses() {
 
 async function loadCourses(container) {
     try {
-        const courses = await getCourses();
+        const currentUser = await getCurrentUser();
+        const courses = await getCourses(currentUser.id);
 
         if (!courses || courses.length === 0) {
             container.innerHTML = "";

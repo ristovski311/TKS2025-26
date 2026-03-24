@@ -1,25 +1,32 @@
 {
   "format": 1,
   "restore": {
-    "/Users/nikola/Documents/Gitrepos/TKS2025-26/Backend/Backend/Backend.csproj": {}
+    "C:\\gitHub\\TKS2025-26\\Backend\\Backend\\Backend.csproj": {}
   },
   "projects": {
-    "/Users/nikola/Documents/Gitrepos/TKS2025-26/Backend/Backend/Backend.csproj": {
+    "C:\\gitHub\\TKS2025-26\\Backend\\Backend\\Backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/nikola/Documents/Gitrepos/TKS2025-26/Backend/Backend/Backend.csproj",
+        "projectUniqueName": "C:\\gitHub\\TKS2025-26\\Backend\\Backend\\Backend.csproj",
         "projectName": "Backend",
-        "projectPath": "/Users/nikola/Documents/Gitrepos/TKS2025-26/Backend/Backend/Backend.csproj",
-        "packagesPath": "/Users/nikola/.nuget/packages/",
-        "outputPath": "/Users/nikola/Documents/Gitrepos/TKS2025-26/Backend/Backend/obj/",
+        "projectPath": "C:\\gitHub\\TKS2025-26\\Backend\\Backend\\Backend.csproj",
+        "packagesPath": "C:\\Users\\risto\\.nuget\\packages\\",
+        "outputPath": "C:\\gitHub\\TKS2025-26\\Backend\\Backend\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/Users/nikola/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\risto\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -74,7 +81,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/nix/store/422nyafig1gx3xmrcabbyi9yx9nszcn1-dotnet-sdk-8.0.123/share/dotnet/sdk/8.0.123/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

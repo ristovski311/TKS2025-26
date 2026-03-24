@@ -1,8 +1,8 @@
 import { API_ENDPOINTS } from '../config/config.js';
 
-export async function getCourses() {
+export async function getCourses(userId) {
     try {
-        const response = await fetch(API_ENDPOINTS.COURSES, {
+        const response = await fetch(API_ENDPOINTS.COURSES_BY_USER(userId), {
             method: "GET",
             headers: { "Content-Type": "application/json" },
             credentials: "include"
