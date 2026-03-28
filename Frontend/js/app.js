@@ -5,6 +5,7 @@ import { renderCourses } from './view/coursesView.js';
 import { renderRegister } from './view/registerView.js';
 import { renderCalendar } from './view/calendarView.js';
 import {renderProfessors} from './view/professorsView.js';
+import {renderNotes} from './view/notesView.js'
 
 function initApp(){
     if(isAuthenticated()){
@@ -26,7 +27,7 @@ function initApp(){
                 renderCourses();
                 break;
             case "notes":
-                renderHome();
+                renderNotes();
                 break;
             case "calendar":
                 renderCalendar();

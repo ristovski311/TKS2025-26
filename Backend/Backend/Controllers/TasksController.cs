@@ -82,5 +82,23 @@ namespace Backend.Controllers
             await _repository.DeleteAsync(id);
             return NoContent();
         }
+
+        [HttpGet("courseId/{courseId:int}")]
+        public async Task<ActionResult> GetByCourseId(int courseId)
+        {
+            var tasks = await _repository.GetAllByCourseIdAsync(courseId);
+            if (!tasks.Any())
+                return NotFound(new { message = "No tasks for this course." });
+
+            return Ok(tasks.Select(p => p.ToDto()));
+        }
+
+        [HttpGet("userId/{userId:int}")]
+
+        public async Task<ActionResult> GetByUserId(int userId)
+        {
+            var tasks = await _repository.GetAllByUserIdAsync(userId);
+            return Ok(tasks.Select(x => x.ToDto()));
+        }
     }
 }

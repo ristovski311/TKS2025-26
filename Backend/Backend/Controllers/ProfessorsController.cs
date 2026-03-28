@@ -71,9 +71,6 @@ namespace Backend.Controllers
         public async Task<ActionResult> GetByUserId(int userId)
         {
             var professors = await _repository.GetAllByUserIdAsync(userId);
-            if (!professors.Any())
-                return NotFound(new { message = "No professors for this user." });
-
             return Ok(professors.Select(p => p.ToDto()));
         }
     }

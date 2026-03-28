@@ -1,5 +1,6 @@
 ﻿using Backend.DTOs;
 using Backend.Mappings;
+using Backend.Models;
 using Backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -81,6 +82,24 @@ namespace Backend.Controllers
 
             await _repository.DeleteAsync(id);
             return NoContent();
+        }
+
+        [HttpGet("courseId/{courseId:int}")]
+
+        public async Task<ActionResult> GetByCourseId(int courseId)
+        {
+            var notes = await _repository.GetAllByCourseIdAsync(courseId);
+            if(!notes.Any()) 
+                return NotFound(new {message = "No notes for this course."});
+            return Ok(notes.Select(x => x.ToDto()));
+        }
+
+        [HttpGet("userId/{userId:int}")]
+
+        public async Task<ActionResult> GetByUserId(int userId)
+        {
+            var notes = await _repository.GetAllByUserIdAsync(userId);
+            return Ok(notes.Select(x => x.ToDto()));
         }
     }
 }

@@ -18,6 +18,21 @@ namespace Backend.Repositories
             return response.Models;
         }
 
+        public async Task<IEnumerable<TaskItem>> GetAllByCourseIdAsync(int CourseId)
+        {
+            var response = await _supabase.From<TaskItem>().Where(p => p.CourseId == CourseId).Get();
+            return response.Models;
+        }
+        public async Task<IEnumerable<TaskItem>> GetAllByUserIdAsync(int UserId)
+        {
+            var courses = await _supabase.From<Course>().Where(t => t.UserId == UserId).Get();
+            var courseIds = courses.Models.Select(c => c.Id).ToList();
+
+            var tasks = await _supabase.From<TaskItem>().Filter(t => t.CourseId, Supabase.Postgrest.Constants.Operator.In, courseIds).Get();
+
+            return tasks.Models;
+        }
+
         public async Task<TaskItem?> GetByIdAsync(int id)
         {
             var response = await _supabase.From<TaskItem>()

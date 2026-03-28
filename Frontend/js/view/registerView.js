@@ -27,8 +27,8 @@ export function renderRegister() {
     form.append(username, email, password, firstName, lastName, semester, phone, button);
     form.addEventListener("submit", handleRegister);
 
-    const switchText = createElement("p", "auth-switch", "Vec imate nalog?");
-    const link = createElement("span", "auth-link", " Prijavite se");
+    const switchText = createElement("p", "auth-switch", "Already a user?");
+    const link = createElement("span", "auth-link", " Login here");
     link.addEventListener("click", renderLogin);
     switchText.appendChild(link);
 

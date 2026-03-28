@@ -1,5 +1,5 @@
-import { createElement, clearRoot, createNavBar, createHeader, showSkeletons } from '../misc/domHelpers.js';
-import { getNotes, createNote, updateNote } from '../services/noteService.js';
+import { createElement, clearRoot, createNavBar, createHeader, showSkeletons, handleAuthError, showLoadingOverlay } from '../misc/domHelpers.js';
+import { getNotesByUserId, createNote, updateNote } from '../services/noteService.js';
 import { getCourses } from '../services/courseService.js';
 import { getCurrentUser } from '../services/userService.js';
 import { formatDate } from '../misc/utils.js';
@@ -8,6 +8,8 @@ import { formatDate } from '../misc/utils.js';
 let currentFolderId = null;
 let allNotes = [];
 let allCourses = [];
+
+//TODO: dodati userID kod tasks i notes
 
 export async function renderNotes() {
     localStorage.setItem("current_page", "notes");
@@ -65,15 +67,13 @@ export async function renderNotes() {
 
 async function loadData() {
     try {
-        const currentUser = getCurrentUser();
+        const currentUser = await getCurrentUser();
 
-        allCourses = await getCourses(currentUser.id);
-        allNotes = await getNotes();
-
-        const [notesData, coursesData] = await Promise.all([getNotes(), getCourses()]);
+        const [notesData, coursesData] = await Promise.all([getNotesByUserId(currentUser.id), getCourses(currentUser.id)]);
         allNotes = notesData;
         allCourses = coursesData;
     } catch (error) {
+        if(handleAuthError(error)) return [];
         console.error("Error fetching data:", error);
     }
 }
@@ -174,27 +174,10 @@ function createNoteCard(note) {
     
     card.append(cardHeader, title, description);
     
-    card.addEventListener("click", () => openNoteEditor(false, note));
+    card.addEventListener("click", () => openNoteFormModal(false, note));
     card.style.cursor = "pointer";
 
     return card;
-}
-
-function openNoteEditor(isFolderMode = false, noteToEdit = null) {
-    const root = document.getElementById("root");
-    root.innerHTML = "";
-
-    const header = createHeader();
-    const nav = createNavBar();
-
-    const editor = createElement("div", "note-editor");
-
-    createNoteForm(isFolderMode, noteToEdit).then(form => {
-        form.classList.add("editor-form");
-        editor.appendChild(form);
-    });
-
-    root.append(header, nav, editor);
 }
 
 async function openNoteFormModal(isFolderMode = false, noteToEdit = null) {
@@ -204,7 +187,7 @@ async function openNoteFormModal(isFolderMode = false, noteToEdit = null) {
     const header = createElement("div", "modal-header");
     let modalTitleText = isFolderMode ? "New Folder" : "New Note";
     if (noteToEdit) {
-        modalTitleText = isFolderMode ? "Edit Folder" : "Edit Note";
+        modalTitleText = isFolderMode ? "Folder" : "Note";
     }
     const modalTitle = createElement("h2", "modal-title", modalTitleText);
     const closeBtn = createElement("button", "modal-close", "×");
@@ -271,26 +254,23 @@ async function createNoteForm(isFolderMode, note = null) {
 
         // Kurs
         const courseGroup = createElement("div", "form-group");
-        const courseLabel = createElement("label", "form-label", "Connect with the course (optional)");
+        const courseLabel = createElement("label", "form-label", "Course");
         const courseSelect = createElement("select", "form-select");
         courseSelect.name = "courseId";
 
-        const defaultOption = createElement("option", "", "Select a Course");
-        defaultOption.value = "";
-        courseSelect.appendChild(defaultOption);
-
-        const nullOption = createElement("option", "", "None");
-        nullOption.value = "";
-        courseSelect.appendChild(nullOption);
-
+        // Add actual courses only
         allCourses.forEach(course => {
             const option = createElement("option", "", course.title);
             option.value = course.id;
+
+            // Select the course if note is connected
             if (note && course.id === note.courseId) {
                 option.selected = true;
             }
+
             courseSelect.appendChild(option);
         });
+
         courseGroup.append(courseLabel, courseSelect);
 
         form.append(descGroup, contentGroup, courseGroup);
@@ -321,6 +301,8 @@ async function createNoteForm(isFolderMode, note = null) {
 async function handleNoteSubmit(e, isFolderMode, existingNote) {
     e.preventDefault();
     
+    const hideOverlay = showLoadingOverlay(); 
+
     const formData = new FormData(e.target);
     const now = new Date().toISOString();
 
@@ -364,6 +346,8 @@ async function handleNoteSubmit(e, isFolderMode, existingNote) {
         }
         const overlay = document.querySelector(".modal-overlay");
         if (overlay) overlay.remove();
+        
+        hideOverlay();
         renderNotes();
     } catch (err) {
         alert("Greska pri cuvanju: " + err.message);

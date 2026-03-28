@@ -1,4 +1,4 @@
-import { createElement, createHomeButton, clearRoot, createHeader, createLoader, createNavBar } from '../misc/domHelpers.js';
+import { createElement, createHomeButton, clearRoot, createHeader, createLoader, createNavBar, handleAuthError } from '../misc/domHelpers.js';
 import { getCurrentUser } from '../services/userService.js';
 import {renderCourses} from './coursesView.js';
 import {renderCalendar} from './calendarView.js'
@@ -34,6 +34,7 @@ async function loadCurrentUser(greetingElement) {
         const user = await getCurrentUser();
         greetingElement.textContent = `Hi, ${user.username}!`;
     } catch (error) {
+        if (handleAuthError(error)) return [];
         console.error("Session expired or invalid!", error);
         await handleLogout();
     }

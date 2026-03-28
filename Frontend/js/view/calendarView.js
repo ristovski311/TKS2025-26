@@ -1,10 +1,10 @@
 import { formatDate } from '../misc/utils.js';
-import { clearRoot,createElement, createNavBar, showLoadingOverlay } from '../misc/domHelpers.js';
+import { clearRoot,createElement, createNavBar, showLoadingOverlay, handleAuthError } from '../misc/domHelpers.js';
 import { logoutUser} from '../services/userService.js';
 import { renderLogin } from './loginView.js';
 import { renderHome } from './homeView.js';
 import { getCourses } from '../services/courseService.js'
-import { getTasks, createTask, updateTask } from '../services/taskService.js'
+import { getTasksByUser, createTask, updateTask } from '../services/taskService.js'
 import { getCurrentUser } from '../services/userService.js';
 
 let currentDate = new Date();
@@ -31,7 +31,13 @@ export async function renderCalendar() {
     const hideOverlay = showLoadingOverlay();
     try
     {
-        tasks = await getTasks();
+        const currentUser = await getCurrentUser();
+        console.log(currentUser.id)
+        tasks = await getTasksByUser(currentUser.id);
+    }
+    catch (error) {
+        if(handleAuthError(error)) return [];
+        console.error("Error fetching data:", error);
     }
     finally
     {
@@ -330,7 +336,7 @@ async function createTaskForm(task = null) {
     
     try {
         const currentUser = await getCurrentUser();
-        const courses = await getCourses();
+        const courses = await getCourses(currentUser.id);
         courses.forEach(course => {
             const option = createElement("option", "", course.title);
             option.value = course.id;
@@ -348,7 +354,7 @@ async function createTaskForm(task = null) {
     // Earned grade
     const footer = createElement("div", "course-footer");
 
-    if (task.completed) {
+    if (task != null && task.completed) {
         const grade = createElement("span", "course-grade", `Grade: ${task.gradeEarned}`);
         footer.appendChild(grade);
     } else {
