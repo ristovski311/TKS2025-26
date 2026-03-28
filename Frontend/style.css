@@ -273,6 +273,7 @@ body {
     font-size: 16px;
     font-weight: bold;
     color: #4f46e5;
+    margin-bottom: 12px;
 }
 
 .empty-message,
@@ -678,6 +679,16 @@ body {
     }
 }
 
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
 .sort-row {
     display: flex;
     gap: 10px;
@@ -685,21 +696,42 @@ body {
     justify-content: center;
 }
 
-.btn-pass {
+.btn-pass,
+.btn-remove {
     width: 100%;
     padding: 8px 16px;
-    background: #10b981;
     color: white;
-    border: none;
     border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
     cursor: pointer;
     transition: background 0.2s ease;
 }
 
+.btn-pass {
+    background: #10b981;
+    border: none;
+    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+}
+
 .btn-pass:hover {
     background: #059669;
+}
+
+.btn-remove {
+    color: #ef4444;
+    background: white;
+    border: solid 1px;
+    border-color: #ef4444;
+    font-size: 12px;
+    font-weight: 600;
+    width: 30%;
+    padding: 4px;
+}
+
+.btn-remove:hover {
+    color: #dc2626;
 }
 
 .empty-message,
@@ -881,27 +913,27 @@ body {
     z-index: 5;
 }
 
-.theme-blue   { 
+.theme-blue {
     border-left-color: #3b82f6;
-    background: #eff6ff; 
+    background: #eff6ff;
 }
 
-.theme-green  { 
+.theme-green {
     border-left-color: #10b981;
     background: #ecfdf5;
 }
 
-.theme-purple { 
+.theme-purple {
     border-left-color: #8b5cf6;
     background: #f5f3ff;
 }
 
-.theme-orange { 
+.theme-orange {
     border-left-color: #f59e0b;
     background: #fffbeb;
 }
 
-.theme-pink { 
+.theme-pink {
     border-left-color: #ec4899;
     background: #fdf2f8;
 }
@@ -1024,7 +1056,7 @@ body {
     padding: 16px;
     height: calc(100vh - 180px);
     overflow-y: auto;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     backdrop-filter: blur(10px);
 }
 
@@ -1045,7 +1077,7 @@ body {
     padding: 16px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -1053,7 +1085,7 @@ body {
 
 .note-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 6px 20px rgba(79,70,229,0.15);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.15);
 }
 
 .note-card-header {

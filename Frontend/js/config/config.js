@@ -18,10 +18,7 @@ export const API_ENDPOINTS = {
     COURSES: `${API_BASE}/Courses`,
     PROFESSORS: `${API_BASE}/Professors`,
     PROFESSORS_BY_USER: (userId) => `${API_BASE}/Professors/userId/${userId}`,
-<<<<<<< Updated upstream
     TASKS: `${API_BASE}/Tasks`,
-    NOTES: `${API_BASE}/Notes`
-=======
+    NOTES: `${API_BASE}/Notes`,
     COURSES_BY_USER: (userId) => `${API_BASE}/Courses/user/${userId}`
->>>>>>> Stashed changes
 };

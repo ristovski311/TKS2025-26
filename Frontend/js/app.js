@@ -4,6 +4,7 @@ import { renderLogin } from './view/loginView.js';
 import { renderCourses } from './view/coursesView.js';
 import { renderRegister } from './view/registerView.js';
 import { renderCalendar } from './view/calendarView.js';
+import {renderProfessors} from './view/professorsView.js';
 
 function initApp(){
     if(isAuthenticated()){
@@ -29,6 +30,9 @@ function initApp(){
                 break;
             case "calendar":
                 renderCalendar();
+                break;
+            case "professors":
+                renderProfessors();
                 break;
             default:
                 renderLogin();

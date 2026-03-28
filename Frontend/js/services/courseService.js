@@ -58,3 +58,24 @@ export async function updateCourse(courseId, courseData) {
         throw err;
     }
 }
+
+export async function deleteCourse(courseId) {
+    try {
+        const response = await fetch(`${API_ENDPOINTS.COURSES}/${courseId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to remove the course with id: " + courseId);
+        }
+        else
+        {
+            console.log("Deleted the course with the id:" + courseId);
+        }
+    } catch (err) {
+        console.error("Cannot delete the course:", err);
+        throw err;
+    }
+}

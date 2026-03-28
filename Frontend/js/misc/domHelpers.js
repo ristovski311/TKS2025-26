@@ -5,6 +5,7 @@ import { renderNotes } from '../view/notesView.js'
 import { renderCalendar } from '../view/calendarView.js'
 import { formatDate } from './utils.js'
 import { logoutUser} from '../services/userService.js';
+import {renderProfessors} from '../view/professorsView.js'
 
 export function clearRoot() {
     const root = document.getElementById("root");
@@ -108,11 +109,11 @@ export function createConfirmModal(message, onConfirm, onCancel) {
 
     const confirmBtn = document.createElement("button");
     confirmBtn.className = "btn-submit";
-    confirmBtn.textContent = "Logout";
+    confirmBtn.textContent = "Yes";
 
     const cancelBtn = document.createElement("button");
     cancelBtn.className = "btn-cancel";
-    cancelBtn.textContent = "Cancel";
+    cancelBtn.textContent = "No";
 
     confirmBtn.onclick = () => {
         document.body.removeChild(overlay);
@@ -148,9 +149,11 @@ export function createSkeletonCard() {
     const professor = createElement("div", "skeleton skeleton-text");
     const semester = createElement("div", "skeleton skeleton-text");
     const description = createElement("div", "skeleton skeleton-description");
+    const semester2 = createElement("div", "skeleton skeleton-text");
+    const description2 = createElement("div", "skeleton skeleton-description");
     const footer = createElement("div", "skeleton skeleton-footer");
 
-    card.append(title, professor, semester, description, footer);
+    card.append(title, professor, semester, description, description2, semester2, footer);
 
     return card;
 }
@@ -161,6 +164,18 @@ export function createLoader() {
     return loader;
 }
 
+export function showLoadingOverlay() {
+    const overlay = document.createElement("div");
+    overlay.className = "loading-overlay";
+    overlay.id = "loading-overlay";
+
+    const loader = createLoader();
+    overlay.appendChild(loader);
+    document.body.appendChild(overlay);
+
+    return () => overlay.remove();
+}
+
 export function createNavBar()
 {
     const navBar = createElement("nav", "main-nav");
@@ -169,13 +184,15 @@ export function createNavBar()
     const navItemCourses = createElement("button", "main-nav-item main-nav-item-courses", "Courses");
     const navItemNotes = createElement("button", "main-nav-item main-nav-item-notes", "Notes");
     const navItemCalendar = createElement("button", "main-nav-item main-nav-item-calendar", "Calendar");
+    const navItemProfessors = createElement("button", "main-nav-item main-nav-item-professors", "Professors");
     
-    navBar.append(navItemHome, navItemCourses, navItemNotes, navItemCalendar);
+    navBar.append(navItemHome, navItemProfessors, navItemCourses, navItemNotes, navItemCalendar);
 
     navItemHome.addEventListener("click", renderHome);
     navItemCourses.addEventListener("click", renderCourses)
     navItemCalendar.addEventListener("click", renderCalendar)
     navItemNotes.addEventListener("click", renderNotes)
+    navItemProfessors.addEventListener("click", renderProfessors)
     
     applySelected(navBar);
 
@@ -190,7 +207,8 @@ function applySelected(navbar)
         home: ".main-nav-item-home",
         courses: ".main-nav-item-courses",
         calendar: ".main-nav-item-calendar",
-        notes: ".main-nav-item-notes"
+        notes: ".main-nav-item-notes",
+        professors: ".main-nav-item-professors"
     };
 
     const selectedSelector = map[currentPage];
