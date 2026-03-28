@@ -1,6 +1,7 @@
-import { createElement, clearRoot, createNavBar, createHeader, createSkeletonCard } from '../misc/domHelpers.js';
+import { createElement, clearRoot, createNavBar, createHeader, showSkeletons } from '../misc/domHelpers.js';
 import { getNotes, createNote, updateNote } from '../services/noteService.js';
 import { getCourses } from '../services/courseService.js';
+import { getCurrentUser } from '../services/userService.js';
 import { formatDate } from '../misc/utils.js';
 
 // Stanje stranice
@@ -64,19 +65,16 @@ export async function renderNotes() {
 
 async function loadData() {
     try {
+        const currentUser = getCurrentUser();
+
+        allCourses = await getCourses(currentUser.id);
+        allNotes = await getNotes();
+
         const [notesData, coursesData] = await Promise.all([getNotes(), getCourses()]);
         allNotes = notesData;
         allCourses = coursesData;
     } catch (error) {
-        console.error("Greska pri ucitavanju podataka:", error);
-    }
-}
-
-function showSkeletons(container) {
-    container.innerHTML = "";
-    const count = 4;
-    for (let i = 0; i < count; i++) {
-        container.appendChild(createSkeletonCard());
+        console.error("Error fetching data:", error);
     }
 }
 

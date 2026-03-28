@@ -27,7 +27,11 @@ export function renderLogin() {
     link.addEventListener("click", renderRegister);
     switchText.appendChild(link);
 
-    container.append(title, form, switchText, error);
+    const illustration = createElement("img", "home-illustration");
+    illustration.src = "../../images/illustration.png";
+    illustration.alt = "Illustration";
+
+    container.append(illustration, title, form, switchText, error);
     wrapper.appendChild(container);
     root.appendChild(wrapper);
 

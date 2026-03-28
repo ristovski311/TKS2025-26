@@ -144,6 +144,14 @@ body {
     padding: 20px;
 }
 
+.home-illustration {
+    display: block;
+    margin: 0.5rem auto 0;
+    width: 100%;
+    max-width: 400px;
+    opacity: 0.9;
+}
+
 .home-button-row {
     display: flex;
     gap: 20px;
@@ -170,8 +178,9 @@ body {
 
 
 .home-center-text {
-    margin-top: 30px;
-    margin-bottom: 60px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 0px;
     text-align: center;
     font-size: 54px;
     font-weight: bold;
@@ -199,6 +208,20 @@ body {
     margin-bottom: 30px;
     font-weight: bold;
     text-align: center;
+}
+
+.app-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.app-logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
 }
 
 .courses-grid {
@@ -731,7 +754,8 @@ body {
 }
 
 .btn-remove:hover {
-    color: #dc2626;
+    background: #dc2626;
+    color: white;
 }
 
 .empty-message,

@@ -20,9 +20,12 @@ export async function renderHome() {
     greeting.appendChild(createLoader());   
     loadCurrentUser(greeting);
 
-    const centerText = createElement("h2", "home-center-text", "What is up today?");
+    const centerText = createElement("h2", "home-center-text", "Let's note it!");
+    const illustration = createElement("img", "home-illustration");
+    illustration.src = "../../images/illustration.png";
+    illustration.alt = "Illustration";
+    content.append(greeting, centerText, illustration);
 
-    content.append(greeting, centerText);
     root.append(header, nav, content);
 }
 

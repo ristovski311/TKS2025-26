@@ -1,6 +1,6 @@
-import { createElement, clearRoot, createSkeletonCard, createNavBar } from '../misc/domHelpers.js';
+import { createElement, clearRoot, showSkeletons, createNavBar, createConfirmModal, showLoadingOverlay } from '../misc/domHelpers.js';
 import { getCurrentUser } from '../services/userService.js';
-import { getProfessorById, getProfessorsByUserId } from '../services/professorService.js';
+import { getProfessorById, getProfessorsByUserId, addProfessor, deleteProfessor, updateProfessor } from '../services/professorService.js';
 import { getCourses, createCourse, updateCourse } from '../services/courseService.js'
 import { createHeader } from '../misc/domHelpers.js'
 
@@ -20,8 +20,8 @@ export async function renderProfessors()
         const pageTitle = createElement("h1", "page-title", "My Professors");
         content.appendChild(pageTitle);
     
-        const coursesGrid = createElement("div", "courses-grid");
-        content.appendChild(coursesGrid);
+        const professorsGrid = createElement("div", "courses-grid");
+        content.appendChild(professorsGrid);
     
         root.appendChild(content);
     
@@ -30,9 +30,36 @@ export async function renderProfessors()
         fab.addEventListener("click", openAddProfessorModal);
         root.appendChild(fab);
     
-        const courses = await loadCourses(coursesGrid);
-    
-        sortBySelect.dispatchEvent(new Event("change"));
+        showSkeletons(professorsGrid);
+
+        const professors = await loadProfessors(professorsGrid);
+}
+
+//---
+
+async function loadProfessors(container) {
+    try {
+        const currentUser = await getCurrentUser();
+        const professors = await getProfessorsByUserId(currentUser.id);
+
+        if (!professors || professors.length === 0) {
+            container.innerHTML = "";
+            const emptyMsg = createElement("p", "empty-message", "No professors.");
+            container.appendChild(emptyMsg);
+            return [];
+        }
+
+        await renderProfessorCards(container, professors);
+        return professors;
+
+    } catch (error) {
+        if (handleAuthError(error)) return [];
+        container.innerHTML = "";
+        console.error("Failed to load professors:", error);
+        const errorMsg = createElement("p", "error-message", "Error fetching the professors.");
+        container.appendChild(errorMsg);
+        return [];
+    }
 }
 
 //---
@@ -62,7 +89,9 @@ async function openAddProfessorModal() {
 
 async function createProfessorForm(professor = null) {
     const form = createElement("form", "course-form");
-    form.addEventListener("submit", (e) => handleCourseSubmit(e, course));
+    form.addEventListener("submit", (e) => {
+        handleProfessorSubmit(e, professor)
+    });
     
     //Ime
     const nameGroup = createElement("div", "form-group")
@@ -96,7 +125,7 @@ async function createProfessorForm(professor = null) {
     emailInput.placeholder = "email@mail.com";
     if(professor != null)
     {
-        emailInput.value = professor.email;
+        emailInput.value = professor.mail;
     }
     emailGroup.append(emailLabel, emailInput);
 
@@ -143,4 +172,110 @@ async function createProfessorForm(professor = null) {
     form.append(nameGroup, emailGroup, phoneGroup, officeGroup, actions);
     
     return form;
+}
+
+//---
+
+async function renderProfessorCards(container, professors) {
+    const cards = await Promise.all(professors.map(prof => createProfessorCard(prof)));
+    container.innerHTML = "";
+    cards.forEach(card => container.appendChild(card));
+}
+
+function createProfessorCard(professor) {
+    const card = createElement("div", "course-card");
+
+    //Ponovo koristimo iste klase za profesorske kartice kao za kurseve
+    const name = createElement("h3", "course-title", `Prof. ${professor.firstName} ${professor.lastName}`);
+    const email = createElement("p", "course-professor", `Mail: ${professor.mail}`);
+    const phone = createElement("p", "course-semester", `Phone: ${professor.phone}`);
+    const office = createElement("p", "course-description", `Office: ${professor.office}`);
+
+    const removeBtn = createElement("button", "btn-remove", "Remove");
+    removeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        handleProfessorRemove(professor.id);
+    });
+
+    card.append(name, email, phone, office, removeBtn);
+    card.addEventListener("click", () => openEditProfessorModal(professor));
+    card.style.cursor = "pointer";
+
+    return card;
+}
+
+//---
+
+async function handleProfessorRemove(profId)
+{
+    createConfirmModal(
+        "Are you sure you want to remove this professor?",
+        async () => {
+            const hideOverlay = showLoadingOverlay();
+            try{
+                await deleteProfessor(profId);
+            }
+            finally
+            {
+                hideOverlay();
+            }
+            clearRoot();
+            renderProfessors();
+        },
+        null,
+        "NOTE: This will remove every course linked to this professor, same for the notes and tasks. We recommend changing the professor of the course first."
+    )
+}
+
+async function handleProfessorSubmit(e, professor) {
+    e.preventDefault();
+
+    const hideOverlay = showLoadingOverlay();
+    const currentUser = await getCurrentUser();
+    const formData = new FormData(e.target);
+    const professorData = {
+        firstName: formData.get("firstName"),
+        lastName: formData.get("lastName"),
+        mail: formData.get("email"),
+        phone: formData.get("phone"),
+        office: formData.get("office"),
+        userId: currentUser.id
+    };
+
+    try {
+        if (professor)
+            await updateProfessor(professor.id, professorData);
+        else
+            await addProfessor(professorData);
+        document.querySelector(".modal-overlay").remove();
+        hideOverlay();
+        renderProfessors();
+    } catch (err) {
+        alert("Error saving professor: " + err.message);
+    }
+}
+
+//---
+
+async function openEditProfessorModal(professor) {
+    const overlay = createElement("div", "modal-overlay");
+    
+    const modalContent = createElement("div", "modal-content");
+    
+    const header = createElement("div", "modal-header");
+    const modalTitle = createElement("h2", "modal-title", "Edit Professor Data");
+    const closeBtn = createElement("button", "modal-close", "×");
+    closeBtn.addEventListener("click", () => overlay.remove());
+    header.append(modalTitle, closeBtn);
+    
+    const form = await createProfessorForm(professor);
+
+    modalContent.append(header, form);
+    overlay.appendChild(modalContent);
+    
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) overlay.remove();
+    });
+    
+    document.body.appendChild(overlay);
 }

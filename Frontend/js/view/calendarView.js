@@ -1,5 +1,5 @@
 import { formatDate } from '../misc/utils.js';
-import { clearRoot,createElement, createNavBar } from '../misc/domHelpers.js';
+import { clearRoot,createElement, createNavBar, showLoadingOverlay } from '../misc/domHelpers.js';
 import { logoutUser} from '../services/userService.js';
 import { renderLogin } from './loginView.js';
 import { renderHome } from './homeView.js';
@@ -27,7 +27,16 @@ export async function renderCalendar() {
     content.appendChild(pageTitle);
 
     // Tasks
-    tasks = await getTasks();
+
+    const hideOverlay = showLoadingOverlay();
+    try
+    {
+        tasks = await getTasks();
+    }
+    finally
+    {
+        hideOverlay();
+    }
 
     // Calendar container
     const calendarContainer = createElement("div", "calendar-container");

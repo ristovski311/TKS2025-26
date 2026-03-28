@@ -60,6 +60,10 @@ export async function getCurrentUser() {
             credentials: "include"
         });
 
+        if (response.status === 401) {
+            throw new Error("SESSION_EXPIRED");
+        }
+        
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`Failed to fetch current user: ${response.status}`);

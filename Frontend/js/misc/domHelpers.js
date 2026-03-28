@@ -4,7 +4,7 @@ import { renderCourses } from '../view/coursesView.js'
 import { renderNotes } from '../view/notesView.js'
 import { renderCalendar } from '../view/calendarView.js'
 import { formatDate } from './utils.js'
-import { logoutUser} from '../services/userService.js';
+import { logoutUser, getCurrentUser} from '../services/userService.js';
 import {renderProfessors} from '../view/professorsView.js'
 
 export function clearRoot() {
@@ -55,24 +55,31 @@ export function createElement(tag, className, textContent = "") {
 
 export function createHeader() {
     const header = createElement("header", "main-header");
-    const title = createElement("h1", "app-title", "NoteIT!");
-    title.addEventListener("click", renderHome); 
-    const rightSection = createElement("div", "header-right");
 
+    const titleWrapper = createElement("div", "app-title-wrapper");
+    const logo = createElement("img", "app-logo");
+    logo.src = "../../images/notebook_transparent.png";
+    logo.alt = "NoteIT Logo";
+    const title = createElement("h1", "app-title", "NoteIT!");
+    title.addEventListener("click", renderHome);
+    titleWrapper.append(logo, title);
+    titleWrapper.addEventListener("click", renderHome);
+    titleWrapper.style.cursor = "pointer";
+
+    const rightSection = createElement("div", "header-right");
     const date = createElement("span", "header-date", formatDate(new Date()));
     
     const logoutBtn = document.createElement("button");
     logoutBtn.className = "logout-button";
     logoutBtn.textContent = "Logout";
     logoutBtn.addEventListener("click", handleLogout);
-
     rightSection.append(date, logoutBtn);
-    header.append(title, rightSection);
+    header.append(titleWrapper, rightSection);
     
     return header;
 }
 
-export function createConfirmModal(message, onConfirm, onCancel) {
+export function createConfirmModal(message, onConfirm, onCancel, notemsg = "") {
     const overlay = document.createElement("div");
     overlay.className = "modal-overlay";
 
@@ -104,6 +111,13 @@ export function createConfirmModal(message, onConfirm, onCancel) {
     text.style.color = "#555";
     text.textContent = message;
 
+    const note = document.createElement("p");
+    note.style.textAlign = "center";
+    note.style.marginBottom = "20px";
+    note.style.fontSize = "16px";
+    note.style.color = "#f40000";
+    note.textContent = notemsg;
+
     const actions = document.createElement("div");
     actions.className = "form-actions";
 
@@ -127,7 +141,7 @@ export function createConfirmModal(message, onConfirm, onCancel) {
 
     actions.append(confirmBtn, cancelBtn);
 
-    modal.append(header, text, actions);
+    modal.append(header, text, note, actions);
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 }
@@ -136,8 +150,16 @@ async function handleLogout() {
     createConfirmModal(
         "Are you sure you want to logout?",
         async () => {
-            await logoutUser();
-            renderLogin();
+            const hideOverlay = showLoadingOverlay();
+            try
+            {
+                await logoutUser();
+                renderLogin();
+            }
+            finally
+            {
+                hideOverlay();
+            }
         }
     )
 }
@@ -156,6 +178,16 @@ export function createSkeletonCard() {
     card.append(title, professor, semester, description, description2, semester2, footer);
 
     return card;
+}
+
+export function showSkeletons(container) {
+    container.innerHTML = "";
+
+    const count = 5;
+
+    for (let i = 0; i < count; i++) {
+        container.appendChild(createSkeletonCard());
+    }
 }
 
 export function createLoader() {
@@ -221,4 +253,42 @@ function applySelected(navbar)
     {
         selectedItem.classList.add("main-nav-item-selected");
     }
+}
+
+export function handleAuthError(error) {
+    if (error.message === "SESSION_EXPIRED") {
+        showSessionExpiredModal();
+        return true;
+    }
+    return false;
+}
+
+export function showSessionExpiredModal() {
+    if (document.getElementById("session-expired-modal")) return;
+
+    const overlay = createElement("div", "modal-overlay");
+    overlay.id = "session-expired-modal";
+
+    const modalContent = createElement("div", "modal-content");
+    modalContent.style.maxWidth = "360px";
+    modalContent.style.textAlign = "center";
+
+    const icon = createElement("div", "session-icon", "🔒");
+    icon.style.fontSize = "2.5rem";
+    icon.style.marginBottom = "12px";
+
+    const title = createElement("h2", "modal-title", "Session Expired");
+    const message = createElement("p", "modal-info", "Your session has expired. Please log in again to continue.");
+    message.style.margin = "12px 0 24px";
+
+    const okBtn = createElement("button", "btn-submit", "OK");
+    okBtn.style.width = "100%";
+    okBtn.addEventListener("click", () => {
+        overlay.remove();
+        renderLogin();
+    });
+
+    modalContent.append(icon, title, message, okBtn);
+    overlay.appendChild(modalContent);
+    document.body.appendChild(overlay);
 }

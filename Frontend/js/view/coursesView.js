@@ -1,4 +1,4 @@
-    import { createElement, clearRoot, createSkeletonCard, createNavBar, createConfirmModal,showLoadingOverlay } from '../misc/domHelpers.js';
+    import { createElement, clearRoot, showSkeletons, createNavBar, createConfirmModal,showLoadingOverlay, createLoader, handleAuthError } from '../misc/domHelpers.js';
     import { getCurrentUser } from '../services/userService.js';
     import { getProfessorById, getProfessorsByUserId } from '../services/professorService.js';
     import { getCourses, createCourse, updateCourse, deleteCourse } from '../services/courseService.js'
@@ -49,9 +49,11 @@
         fab.addEventListener("click", openAddCourseModal);
         root.appendChild(fab);
 
+        showSkeletons(coursesGrid);
+
         const courses = await loadCourses(coursesGrid);
 
-        sortBySelect.value = "semester";
+        sortBySelect.value = "title";
         orderSelect.value = "asc";
         
         setupSorting(courses, coursesGrid, sortBySelect, orderSelect);
@@ -74,6 +76,7 @@
             return courses;
 
         } catch (error) {
+            if (handleAuthError(error)) return [];
             container.innerHTML = "";
             console.error("Failed to load courses:", error);
             const errorMsg = createElement("p", "error-message", "Error fetching the courses.");
@@ -82,22 +85,13 @@
         }
     }
 
-    function showSkeletons(container) {
-        container.innerHTML = "";
-
-        const count = Math.floor(Math.random() * (8 - 3 + 1)) + 3;
-
-        for (let i = 0; i < count; i++) {
-            container.appendChild(createSkeletonCard());
-        }
-    }
-
     function setupSorting(courses, container, sortBySelect, orderSelect) {
-        async function renderSorted() {
+        async function renderSorted() 
+        {
             const sortBy = sortBySelect.value;
             const order = orderSelect.value;
 
-        showSkeletons(container);
+            showSkeletons(container);
 
             const sorted = [...courses].sort((a, b) => {
                 let valA, valB;
@@ -201,7 +195,7 @@
         closeBtn.addEventListener("click", () => overlay.remove());
         header.append(modalTitle, closeBtn);
         
-        const form = await createCourseForm();
+        const form = createCourseForm();
         
         modalContent.append(header, form);
         overlay.appendChild(modalContent);
@@ -213,7 +207,7 @@
         document.body.appendChild(overlay);
     }
 
-    async function createCourseForm(course = null) {
+    function createCourseForm(course = null) {
         const form = createElement("form", "course-form");
         form.addEventListener("submit", (e) => handleCourseSubmit(e, course));
         
@@ -245,36 +239,6 @@
         
         rowGroup.append(semesterGroup);
         
-        // Profesori
-        const professorGroup = createElement("div", "form-group");
-        const professorLabel = createElement("label", "form-label", "Professor");
-        const professorSelect = createElement("select", "form-select");
-        professorSelect.name = "professorId";
-        professorSelect.required = true;
-        
-        const defaultOption = createElement("option", "", "Select a professor");
-        defaultOption.value = "";
-        defaultOption.disabled = true;
-        defaultOption.selected = true;  
-        professorSelect.appendChild(defaultOption);
-        
-        try {
-            const currentUser = await getCurrentUser();
-            const professors = await getProfessorsByUserId(currentUser.id);
-            professors.forEach(prof => {
-                const option = createElement("option", "", `${prof.firstName} ${prof.lastName} - ${prof.office}`);
-                option.value = prof.id;
-                if (course && prof.id === course.professorId) {
-                    option.selected = true;
-                }
-                professorSelect.appendChild(option);
-            });
-        } catch (err) {
-            console.error("Failed to load professors:", err);
-        }
-        
-        professorGroup.append(professorLabel, professorSelect);
-        
         // Opis
         const descGroup = createElement("div", "form-group");
         const descLabel = createElement("label", "form-label", "Description");
@@ -297,14 +261,56 @@
         });
         actions.append(cancelBtn, submitBtn);
         
+        // Profesori
+        const professorGroup = createElement("div", "form-group");
+        const professorLabel = createElement("label", "form-label", "Professor");
+
+        const selectWrapper = createElement("div", "select-wrapper");
+        const loaderContainer = createElement("div", "select-loader");
+        loaderContainer.appendChild(createLoader());
+        selectWrapper.appendChild(loaderContainer);
+
+        const professorSelect = createElement("select", "form-select");
+        professorSelect.name = "professorId";
+        professorSelect.required = true;
+        professorSelect.style.display = "none";
+
+        const defaultOption = createElement("option", "", "Select a professor");
+        defaultOption.value = "";
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        professorSelect.appendChild(defaultOption);
+
+        selectWrapper.appendChild(professorSelect);
+        professorGroup.append(professorLabel, selectWrapper);
+
         form.append(titleGroup, rowGroup, professorGroup, descGroup, actions);
-        
+
+        getCurrentUser()
+            .then(user => getProfessorsByUserId(user.id))
+            .then(professors => {
+                professors.forEach(prof => {
+                    const option = createElement("option", "", `${prof.firstName} ${prof.lastName} - ${prof.office}`);
+                    option.value = prof.id;
+                    if (course && prof.id === course.professorId) {
+                        option.selected = true;
+                    }
+                    professorSelect.appendChild(option);
+                });
+            })
+            .catch(err => console.error("Failed to load professors:", err))
+            .finally(() => {
+                loaderContainer.remove();
+                professorSelect.style.display = "";
+            });
+
         return form;
     }
 
     async function handleCourseSubmit(e, course) {
         e.preventDefault();
         
+        const hideOverlay = showLoadingOverlay();
         const currentUser = await getCurrentUser();
         const formData = new FormData(e.target);
         const courseData = {
@@ -322,6 +328,7 @@
             else
                 await createCourse(courseData);
             document.querySelector(".modal-overlay").remove();
+            hideOverlay();
             renderCourses();
         } catch (err) {
             alert("Error creating the course: " + err.message);
@@ -358,7 +365,7 @@
         closeBtn.addEventListener("click", () => overlay.remove());
         header.append(modalTitle, closeBtn);
         
-        const form = await createCourseForm(course);
+        const form = createCourseForm(course);
         
         modalContent.append(header, form);
         overlay.appendChild(modalContent);
