@@ -1,0 +1,116 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{EB9FBD5A-5AFB-4A9F-8445-C99BF2F5435D}|..\\BackendTest\\BackendTest.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backendtest\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB9FBD5A-5AFB-4A9F-8445-C99BF2F5435D}|..\\BackendTest\\BackendTest.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backendtest\\taskstest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB9FBD5A-5AFB-4A9F-8445-C99BF2F5435D}|..\\BackendTest\\BackendTest.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backendtest\\professorstest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB9FBD5A-5AFB-4A9F-8445-C99BF2F5435D}|..\\BackendTest\\BackendTest.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backendtest\\notestest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB9FBD5A-5AFB-4A9F-8445-C99BF2F5435D}|..\\BackendTest\\BackendTest.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backendtest\\coursestest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB9FBD5A-5AFB-4A9F-8445-C99BF2F5435D}|..\\BackendTest\\BackendTest.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backendtest\\authtest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\Program.cs",
+              "RelativeDocumentMoniker": "..\\BackendTest\\Program.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\Program.cs",
+              "RelativeToolTip": "..\\BackendTest\\Program.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAYAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:21:33.281Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TasksTest.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\TasksTest.cs",
+              "RelativeDocumentMoniker": "..\\BackendTest\\TasksTest.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\TasksTest.cs",
+              "RelativeToolTip": "..\\BackendTest\\TasksTest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:18:55.834Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ProfessorsTest.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\ProfessorsTest.cs",
+              "RelativeDocumentMoniker": "..\\BackendTest\\ProfessorsTest.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\ProfessorsTest.cs",
+              "RelativeToolTip": "..\\BackendTest\\ProfessorsTest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:18:43.066Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "NotesTest.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\NotesTest.cs",
+              "RelativeDocumentMoniker": "..\\BackendTest\\NotesTest.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\NotesTest.cs",
+              "RelativeToolTip": "..\\BackendTest\\NotesTest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:18:31.461Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "CoursesTest.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\CoursesTest.cs",
+              "RelativeDocumentMoniker": "..\\BackendTest\\CoursesTest.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\CoursesTest.cs",
+              "RelativeToolTip": "..\\BackendTest\\CoursesTest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:18:14.862Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "AuthTest.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\AuthTest.cs",
+              "RelativeDocumentMoniker": "..\\BackendTest\\AuthTest.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\AuthTest.cs",
+              "RelativeToolTip": "..\\BackendTest\\AuthTest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:17:54.884Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
