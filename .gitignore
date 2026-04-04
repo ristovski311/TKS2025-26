@@ -158,3 +158,9 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sw?
+
+# Visual Studio
+**/bin/
+**/obj/
+*.user
+.vs/
