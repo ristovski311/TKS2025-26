@@ -1,7 +1,6 @@
 import { createElement, clearRoot, showSkeletons, createNavBar, createConfirmModal, showLoadingOverlay } from '../misc/domHelpers.js';
 import { getCurrentUser } from '../services/userService.js';
-import { getProfessorById, getProfessorsByUserId, addProfessor, deleteProfessor, updateProfessor } from '../services/professorService.js';
-import { getCourses, createCourse, updateCourse } from '../services/courseService.js'
+import { getProfessorsByUserId, addProfessor, deleteProfessor, updateProfessor } from '../services/professorService.js';
 import { createHeader } from '../misc/domHelpers.js'
 
 export async function renderProfessors()
@@ -186,18 +185,44 @@ function createProfessorCard(professor) {
     const card = createElement("div", "course-card");
 
     //Ponovo koristimo iste klase za profesorske kartice kao za kurseve
+    const nameWrapper = createElement("div", "course-title-wrapper");
+
     const name = createElement("h3", "course-title", `Prof. ${professor.firstName} ${professor.lastName}`);
+    
+    const editBtn = createElement("button", "course-action-btn", "✏️");
+    const deleteBtn = createElement("button", "course-action-btn", "❌");
+
+    editBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        console.log("Edit professor data.");
+        openEditProfessorModal(course);
+    });
+
+    deleteBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        console.log("Remove professor.");
+        createConfirmModal("Are you sure you want to remove this professor?", 
+            async () => {
+                const hideOverlay = showLoadingOverlay();
+
+                try{
+                    await deleteProfessor(professor.id);
+                    renderProfessors();
+                }
+                finally{
+                    hideOverlay();
+                }
+            }, null, "NOTE: If you remove this professor, every course connected to it will also be deleted!"
+        )
+    });
+
+    nameWrapper.append(name, editBtn, deleteBtn);
+    
     const email = createElement("p", "course-professor", `Mail: ${professor.mail}`);
     const phone = createElement("p", "course-semester", `Phone: ${professor.phone}`);
     const office = createElement("p", "course-description", `Office: ${professor.office}`);
 
-    const removeBtn = createElement("button", "btn-remove", "Remove");
-    removeBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        handleProfessorRemove(professor.id);
-    });
-
-    card.append(name, email, phone, office, removeBtn);
+    card.append(nameWrapper, email, phone, office);
     card.addEventListener("click", () => openEditProfessorModal(professor));
     card.style.cursor = "pointer";
 

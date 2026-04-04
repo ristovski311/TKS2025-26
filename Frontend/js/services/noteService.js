@@ -1,23 +1,5 @@
 import { API_ENDPOINTS } from '../config/config.js';
 
-export async function getNotes() {
-    try {
-        const response = await fetch(API_ENDPOINTS.NOTES, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include"
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch notes");
-        }
-
-        return await response.json();
-    } catch (err) {
-        console.error("Cannot get notes:", err);
-        throw err;
-    }
-}
 
 export async function getNotesByUserId(userId) {
     try {
@@ -74,6 +56,23 @@ export async function updateNote(noteId, noteData) {
         return await response.json();
     } catch (err) {
         console.error("Cannot update note:", err);
+        throw err;
+    }
+}
+
+export async function deleteNote(noteId) {
+    try {
+        const response = await fetch(`${API_ENDPOINTS.NOTES}/${noteId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include"
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to delete note (folder) : " + noteId);
+        }
+    } catch (err) {
+        console.error("Cannot delete note (folder):", err);
         throw err;
     }
 }

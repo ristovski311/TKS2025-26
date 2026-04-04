@@ -13,6 +13,8 @@ namespace Backend.DTOs
         public string Type { get; set; } = string.Empty;
         public int? CourseId { get; set; }
         public int? ParentId { get; set; }
+
+        public int UserId { get; set; }
     }
 
     public class CreateNoteDto
@@ -29,10 +31,11 @@ namespace Backend.DTOs
         [Required(ErrorMessage = "Type is required")]
         [StringLength(50, ErrorMessage = "Type cannot exceed 50 characters")]
         public string Type { get; set; } = string.Empty;
-
         public int? CourseId { get; set; }
-
         public int? ParentId { get; set; }
+        
+        [Required(ErrorMessage ="User id is required")]
+        public int UserId { get; set;}
     }
 
     public class UpdateNoteDto
@@ -47,9 +50,8 @@ namespace Backend.DTOs
 
         [StringLength(50, ErrorMessage = "Type cannot exceed 50 characters")]
         public string? Type { get; set; }
-
         public int? CourseId { get; set; }
-
         public int? ParentId { get; set; }
+        public int UserId { get; set; } 
     }
 }

@@ -90,6 +90,25 @@ body {
     font-size: 14px;
 }
 
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    flex: 1;
+}
+
+.toggle-password {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 8px;
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+}
+
 .main-header {
     height: 60px;
     background: #ffffff;
@@ -248,13 +267,6 @@ body {
     box-shadow: 0 4px 16px rgba(79, 70, 229, 0.2);
 }
 
-.course-title {
-    font-size: 22px;
-    color: #4f46e5;
-    margin: 0 0 8px 0;
-    font-weight: bold;
-}
-
 .course-tag {
     padding: 5px;
     white-space: nowrap;
@@ -355,7 +367,6 @@ body {
 .course-title {
     font-size: 22px;
     color: #4f46e5;
-    margin: 0 0 8px 0;
     font-weight: bold;
 }
 
@@ -721,18 +732,18 @@ body {
 
 .btn-pass,
 .btn-remove {
-    width: 100%;
+    flex: 1;
     padding: 8px 16px;
     color: white;
     border-radius: 6px;
     cursor: pointer;
     transition: background 0.2s ease;
+    margin: 0 3px 0 3px
 }
 
 .btn-pass {
     background: #10b981;
     border: none;
-    margin-bottom: 12px;
     font-size: 14px;
     font-weight: 600;
     text-align: center;
@@ -747,10 +758,8 @@ body {
     background: white;
     border: solid 1px;
     border-color: #ef4444;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
-    width: 30%;
-    padding: 4px;
 }
 
 .btn-remove:hover {
@@ -1174,4 +1183,42 @@ body {
 .action-buttons {
     display: flex;
     gap: 10px;
+}
+
+.folder-action-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.folder-item:hover .folder-action-btn {
+    display: inline-flex;
+}
+
+.note-action-btn,
+.course-action-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.note-card:hover .note-action-btn {
+    display: inline-flex;
+}
+
+.course-card:hover .course-action-btn {
+    display: inline-flex;
+}
+
+.note-title-wrapper,
+.course-title-wrapper {
+    display: flex;
+    align-items: center;
+    margin: 0 0 8px 0;
 }

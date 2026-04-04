@@ -77,3 +77,20 @@ export async function updateTask(taskId, taskData) {
         throw err;
     }
 }
+
+export async function deleteTask(taskId) {
+    try {
+        const response = await fetch(`${API_ENDPOINTS.TASKS}/${taskId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include"
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to delete the task: " + taskId);
+        }
+    } catch (err) {
+        console.error("Cannot delete the task:", err);
+        throw err;
+    }
+}

@@ -1,5 +1,5 @@
-import { createElement, clearRoot, createNavBar, createHeader, showSkeletons, handleAuthError, showLoadingOverlay } from '../misc/domHelpers.js';
-import { getNotesByUserId, createNote, updateNote } from '../services/noteService.js';
+import { createElement, clearRoot, createNavBar, createHeader, showSkeletons, handleAuthError, showLoadingOverlay, createConfirmModal } from '../misc/domHelpers.js';
+import { getNotesByUserId, createNote, updateNote, deleteNote } from '../services/noteService.js';
 import { getCourses } from '../services/courseService.js';
 import { getCurrentUser } from '../services/userService.js';
 import { formatDate } from '../misc/utils.js';
@@ -114,7 +114,35 @@ function createFolderItem(folder, isRoot = false, level = 0) {
     if (folder.id !== null) {
         const count = allNotes.filter(n => n.parentId === folder.id && n.type !== 'folder').length;
         const countSpan = createElement("span", "folder-count", String(count));
-        item.append(icon, title, countSpan);
+
+        const editBtn = createElement("button", "folder-action-btn", "✏️");
+        const deleteBtn = createElement("button", "folder-action-btn", "❌");
+
+        editBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            console.log("Edit folder.");
+            openNoteFormModal(true, folder);
+        });
+
+        deleteBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            console.log("Delete folder.");
+            createConfirmModal("Are you sure you want to delete this folder?", 
+                async () => {
+                    const hideOverlay = showLoadingOverlay();
+
+                    try{
+                        await deleteNote(folder.id);
+                        renderNotes();
+                    }
+                    finally{
+                        hideOverlay();
+                    }
+                }, null, "NOTE: If you delete this folder, every note contained in it will also be deleted!"
+            )
+        });
+
+        item.append(icon, title, editBtn, deleteBtn, countSpan);
     } else {
         item.append(icon, title);
     }
@@ -139,7 +167,7 @@ function renderNotesGrid(container) {
     }
 
     if (notesToDisplay.length === 0) {
-        const emptyMsg = createElement("p", "empty-message", "Nema beleški u ovom folderu.");
+        const emptyMsg = createElement("p", "empty-message", "No notes.");
         container.appendChild(emptyMsg);
         return;
     }
@@ -169,10 +197,42 @@ function createNoteCard(note) {
     const dateSpan = createElement("span", "note-date", formatDate(new Date(note.lastUpdated)));
     cardHeader.appendChild(dateSpan);
 
+    const titleWrapper = createElement("div", "note-title-wrapper");
+
     const title = createElement("h3", "note-title", note.title);
+
+    const editBtn = createElement("button", "note-action-btn", "✏️");
+    const deleteBtn = createElement("button", "note-action-btn", "❌");
+
+    editBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        console.log("Edit note.");
+        openNoteFormModal(false, note);
+    });
+
+    deleteBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        console.log("Delete note.");
+        createConfirmModal("Are you sure you want to delete this note?", 
+            async () => {
+                const hideOverlay = showLoadingOverlay();
+
+                try{
+                    await deleteNote(note.id);
+                    renderNotes();
+                }
+                finally{
+                    hideOverlay();
+                }
+            }
+        )
+    });
+
+    titleWrapper.append(title, editBtn, deleteBtn);
+
     const description = createElement("p", "note-description", note.description);
     
-    card.append(cardHeader, title, description);
+    card.append(cardHeader, titleWrapper, description);
     
     card.addEventListener("click", () => openNoteFormModal(false, note));
     card.style.cursor = "pointer";
@@ -219,7 +279,7 @@ async function createNoteForm(isFolderMode, note = null) {
     const parentIdInput = createElement("input");
     parentIdInput.type = "hidden";
     parentIdInput.name = "parentId";
-    parentIdInput.value = currentFolderId;
+    parentIdInput.value = (note != null) ? note.parentId : currentFolderId;
     form.appendChild(parentIdInput);
 
     // Naslov
@@ -254,23 +314,22 @@ async function createNoteForm(isFolderMode, note = null) {
 
         // Kurs
         const courseGroup = createElement("div", "form-group");
-        const courseLabel = createElement("label", "form-label", "Course");
+        const courseLabel = createElement("label", "form-label", "Connect with the course (optional)");
         const courseSelect = createElement("select", "form-select");
         courseSelect.name = "courseId";
 
-        // Add actual courses only
+        const defaultOption = createElement("option", "", "Select a Course");
+        defaultOption.value = "";
+        courseSelect.appendChild(defaultOption);
+
         allCourses.forEach(course => {
             const option = createElement("option", "", course.title);
             option.value = course.id;
-
-            // Select the course if note is connected
             if (note && course.id === note.courseId) {
                 option.selected = true;
             }
-
             courseSelect.appendChild(option);
         });
-
         courseGroup.append(courseLabel, courseSelect);
 
         form.append(descGroup, contentGroup, courseGroup);
@@ -312,8 +371,6 @@ async function handleNoteSubmit(e, isFolderMode, existingNote) {
     ? null
     : parseInt(pId);
 
-    
-
     // Osnovni podaci
     const noteData = {
         title: formData.get("title"),
@@ -336,12 +393,15 @@ async function handleNoteSubmit(e, isFolderMode, existingNote) {
         noteData.content = "";
         noteData.courseId = null;
     }
+
+    const currentUser = await getCurrentUser();
     
     try {
         if (existingNote) {
-            await updateNote(existingNote.id, { ...existingNote, ...noteData, courseId: noteData.courseId });
+            await updateNote(existingNote.id, { ...existingNote, ...noteData, courseId: noteData.courseId, userId: currentUser.id });
         } else {
             noteData.createdAt = now;
+            noteData.userId = currentUser.id;
             await createNote(noteData);
         }
         const overlay = document.querySelector(".modal-overlay");

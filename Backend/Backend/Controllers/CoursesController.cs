@@ -16,14 +16,6 @@ namespace Backend.Controllers
             _repository = repository;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CourseDto>>> GetAll()
-        {
-            var courses = await _repository.GetAllAsync();
-            var courseDtos = courses.Select(c => c.ToDto());
-            return Ok(courseDtos);
-        }
-
         [HttpGet("{id}")]
         public async Task<ActionResult<CourseDto>> GetById(int id)
         {
@@ -36,14 +28,6 @@ namespace Backend.Controllers
         public async Task<ActionResult<IEnumerable<CourseDto>>> GetByUser(int userId)
         {
             var courses = await _repository.GetCoursesByUserAsync(userId);
-            var courseDtos = courses.Select(c => c.ToDto());
-            return Ok(courseDtos);
-        }
-
-        [HttpGet("professor/{professorId}")]
-        public async Task<ActionResult<IEnumerable<CourseDto>>> GetByProfessor(int professorId)
-        {
-            var courses = await _repository.GetCoursesByProfessorAsync(professorId);
             var courseDtos = courses.Select(c => c.ToDto());
             return Ok(courseDtos);
         }

@@ -32,5 +32,8 @@ namespace Backend.Models
 
         [Column("parent_id")]
         public int? ParentId { get; set; }
+
+        [Column("user_id")]
+        public int UserId { get; set; }
     }
 }

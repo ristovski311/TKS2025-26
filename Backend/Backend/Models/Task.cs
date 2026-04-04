@@ -35,5 +35,8 @@ namespace Backend.Models
 
         [Column("course_id")]
         public int CourseId { get; set; }
+
+        [Column("user_id")]
+        public int UserId { get; set; }
     }
 }

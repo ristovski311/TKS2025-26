@@ -14,6 +14,8 @@ namespace Backend.DTOs
         public float? GradeMax { get; set; }
         public float? GradeEarned { get; set; }
         public int CourseId { get; set; }
+        
+        public int UserId {  get; set; }
     }
 
     public class CreateTaskDto
@@ -42,6 +44,9 @@ namespace Backend.DTOs
 
         [Required(ErrorMessage = "Course ID is required")]
         public int CourseId { get; set; }
+
+        [Required(ErrorMessage = "User ID is required")]
+        public int UserId { get; set; }
     }
 
     public class UpdateTaskDto
@@ -66,5 +71,7 @@ namespace Backend.DTOs
         public float? GradeEarned { get; set; }
 
         public int? CourseId { get; set; }
+
+        public int UserId { get; set; }
     }
 }

@@ -8,48 +8,50 @@ export function renderLogin() {
     
     clearRoot();
     const root = document.getElementById("root");
-
     const wrapper = createElement("div", "auth-wrapper");
     const container = createElement("div", "auth-container");
     const title = createElement("h2", "auth-title", "Login");
     const form = createElement("form", "auth-form");
-
     const emailInput = createInput("email", "Email", "login-email");
     const passwordInput = createInput("password", "Password", "login-pass");
+
+    const passwordWrapper = createElement("div", "password-wrapper");
+    const toggleBtn = createElement("button", "toggle-password");
+    toggleBtn.type = "button";
+    toggleBtn.textContent = "👁️";
+    toggleBtn.setAttribute("aria-label", "Toggle password visibility");
+    toggleBtn.addEventListener("click", () => {
+        const isHidden = passwordInput.type === "password";
+        passwordInput.type = isHidden ? "text" : "password";
+        toggleBtn.textContent = isHidden ? "🔒" : "👁️";
+    });
+    passwordWrapper.append(passwordInput, toggleBtn);
+
     const button = createButton("Login");
     const error = createError();
-
-    form.append(emailInput, passwordInput, button);
+    form.append(emailInput, passwordWrapper, button);
     form.addEventListener("submit", handleLogin);
-
     const switchText = createElement("p", "auth-switch", "Don't have an account?");
     const link = createElement("span", "auth-link", " Register here");
     link.addEventListener("click", renderRegister);
     switchText.appendChild(link);
-
     const illustration = createElement("img", "home-illustration");
     illustration.src = "../../images/illustration.png";
     illustration.alt = "Illustration";
-
     container.append(illustration, title, form, switchText, error);
     wrapper.appendChild(container);
     root.appendChild(wrapper);
-
     form._error = error;
 }
 
 async function handleLogin(e) {
     e.preventDefault();
-
     const form = e.target;
-
     const email = document.querySelector(".login-email").value;
     const password = document.querySelector(".login-pass").value;
-
-    const button = form.querySelector("button");
+    const button = form.querySelector("button[type='submit'], button:not(.toggle-password)");
     
     const originalText = button.textContent;
-
     button.disabled = true;
     button.innerHTML = `<div class="btn-loader"></div>`;
     

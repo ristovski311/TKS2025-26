@@ -1,10 +1,10 @@
 import { formatDate } from '../misc/utils.js';
-import { clearRoot,createElement, createNavBar, showLoadingOverlay, handleAuthError } from '../misc/domHelpers.js';
+import { createLoader, clearRoot,createElement, createNavBar, showLoadingOverlay, handleAuthError, createConfirmModal } from '../misc/domHelpers.js';
 import { logoutUser} from '../services/userService.js';
 import { renderLogin } from './loginView.js';
 import { renderHome } from './homeView.js';
 import { getCourses } from '../services/courseService.js'
-import { getTasksByUser, createTask, updateTask } from '../services/taskService.js'
+import { getTasksByUser, createTask, updateTask, deleteTask } from '../services/taskService.js'
 import { getCurrentUser } from '../services/userService.js';
 
 let currentDate = new Date();
@@ -324,32 +324,50 @@ async function createTaskForm(task = null) {
     // Course
     const courseGroup = createElement("div", "form-group");
     const courseLabel = createElement("label", "form-label", "Course");
+    
+    const selectWrapper = createElement("div", "select-wrapper");
+    const loaderContainer = createElement("div", "select-loader");
+    loaderContainer.appendChild(createLoader());
+    selectWrapper.appendChild(loaderContainer);
+
     const courseSelect = createElement("select", "form-select");
     courseSelect.name = "courseId";
     courseSelect.required = true;
+    courseSelect.style.display = "none";
 
     const defaultOption = createElement("option", "", "Select a course");
     defaultOption.value = "";
     defaultOption.disabled = true;
     defaultOption.selected = true;  
     courseSelect.appendChild(defaultOption);
+
+    selectWrapper.append(courseSelect);
+    courseGroup.append(courseLabel, selectWrapper);
+
+    form.append()
     
     try {
-        const currentUser = await getCurrentUser();
-        const courses = await getCourses(currentUser.id);
-        courses.forEach(course => {
-            const option = createElement("option", "", course.title);
-            option.value = course.id;
-            if (task && course.id === task.courseId) {
-                option.selected = true;
-            }
-            courseSelect.appendChild(option);
-        });
+        getCurrentUser()
+            .then(user => getCourses(user.id))
+            .then(courses => {
+                courses.forEach(course => {
+                    const option = createElement("option", "", `${course.title}`);
+                    option.value = course.id;
+                    if (task && course.id === task.courseId) {
+                        option.selected = true;
+                    }
+                    courseSelect.appendChild(option);
+                });
+            })
+            .catch(err => console.error("Failed to load courses:", err))
+            .finally(() => {
+                loaderContainer.remove();
+                courseSelect.style.display = "";
+            });
     } catch (err) {
         console.error("Failed to load courses:", err);
     }
     
-    courseGroup.append(courseLabel, courseSelect);
 
     // Earned grade
     const footer = createElement("div", "course-footer");
@@ -357,15 +375,35 @@ async function createTaskForm(task = null) {
     if (task != null && task.completed) {
         const grade = createElement("span", "course-grade", `Grade: ${task.gradeEarned}`);
         footer.appendChild(grade);
-    } else {
-        const passBtn = createElement("button", "btn-pass", "Finish task");
+    } else if(task != null) {
+        const passBtn = createElement("button", "btn-pass", "Complete the task");
         passBtn.type = "button";
         passBtn.addEventListener("click", (e) => {
-            console.log("CLCIKED");
             e.stopPropagation();
             openFinishTaskModal(task);
         });
-        footer.appendChild(passBtn);
+
+        const deleteBtn = createElement("button", "btn-remove", "Delete the task");
+        deleteBtn.type = "button";
+        deleteBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            createConfirmModal("Are you sure you want to delete this task?",
+                async (e) => {
+                    const hideOverlay = showLoadingOverlay();
+                    try{
+                        await deleteTask(task.id);
+                        document.querySelector(".modal-overlay").remove();
+                        renderCalendar();
+                    }
+                    finally
+                    {
+                        hideOverlay();
+                    }
+                }
+            )
+        });
+
+        footer.append(passBtn, deleteBtn);
     }
 
     // Dugmici
@@ -388,6 +426,10 @@ async function createTaskForm(task = null) {
 async function handleTaskSubmit(e, task) {
     e.preventDefault();
     
+    const hideOverlay = showLoadingOverlay();
+
+    const currentUser = await getCurrentUser();
+
     const formData = new FormData(e.target);
     const taskData = {
         title: formData.get("title"),
@@ -396,7 +438,8 @@ async function handleTaskSubmit(e, task) {
         date: `${formData.get("date")}T12:00:00`,
         completed: task?.completed ?? false,
         gradeMax: formData.get("grade"),
-        courseId: formData.get("courseId")
+        courseId: formData.get("courseId"),
+        userId: currentUser.id
     };
     
     try {
@@ -405,6 +448,8 @@ async function handleTaskSubmit(e, task) {
         else
             await createTask(taskData);
         document.querySelector(".modal-overlay").remove();
+        
+        hideOverlay();
         renderCalendar();
     } catch (err) {
         alert("Failed to create task: " + err.message);
@@ -418,7 +463,7 @@ async function openFinishTaskModal(task) {
     modalContent.style.maxWidth = "400px";
     
     const header = createElement("div", "modal-header");
-    const modalTitle = createElement("h2", "modal-title", "Finish task");
+    const modalTitle = createElement("h2", "modal-title", "Complete the task");
     const closeBtn = createElement("button", "modal-close", "×");
     closeBtn.addEventListener("click", () => overlay.remove());
     header.append(modalTitle, closeBtn);

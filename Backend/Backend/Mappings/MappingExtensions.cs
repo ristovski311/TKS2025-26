@@ -136,7 +136,8 @@ namespace Backend.Mappings
                 LastUpdated = note.LastUpdated,
                 Type = note.Type,
                 CourseId = note.CourseId,
-                ParentId = note.ParentId
+                ParentId = note.ParentId,
+                UserId = note.UserId
             };
         }
 
@@ -151,7 +152,8 @@ namespace Backend.Mappings
                 CourseId = dto.CourseId,
                 ParentId = dto.ParentId,
                 CreatedAt = DateTime.UtcNow,
-                LastUpdated = DateTime.UtcNow
+                LastUpdated = DateTime.UtcNow,
+                UserId = dto.UserId
             };
         }
 
@@ -164,6 +166,7 @@ namespace Backend.Mappings
             note.CourseId = dto.CourseId;
             note.ParentId = dto.ParentId;
             note.LastUpdated = DateTime.UtcNow;
+            note.UserId = dto.UserId;
         }
 
         // Task Mappings
@@ -180,7 +183,8 @@ namespace Backend.Mappings
                 Completed = task.Completed,
                 GradeMax = task.GradeMax,
                 GradeEarned = task.GradeEarned,
-                CourseId = task.CourseId
+                CourseId = task.CourseId,
+                UserId = task.UserId
             };
         }
 
@@ -196,7 +200,8 @@ namespace Backend.Mappings
                 GradeMax = dto.GradeMax,
                 GradeEarned = dto.GradeEarned,
                 CourseId = dto.CourseId,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                UserId = dto.UserId
             };
         }
 
@@ -210,6 +215,7 @@ namespace Backend.Mappings
             if (dto.GradeMax.HasValue) task.GradeMax = dto.GradeMax.Value;
             if (dto.GradeEarned.HasValue) task.GradeEarned = dto.GradeEarned.Value;
             if (dto.CourseId.HasValue) task.CourseId = dto.CourseId.Value;
+            task.UserId = dto.UserId;
         }
     }
 }

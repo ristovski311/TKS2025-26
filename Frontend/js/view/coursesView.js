@@ -53,12 +53,17 @@
 
         const courses = await loadCourses(coursesGrid);
 
-        sortBySelect.value = "title";
-        orderSelect.value = "asc";
-        
-        setupSorting(courses, coursesGrid, sortBySelect, orderSelect);
+        if(courses.length != 0)
+        {
+            
+                    sortBySelect.value = "title";
+                    orderSelect.value = "asc";
+                    
+                    setupSorting(courses, coursesGrid, sortBySelect, orderSelect);
+            
+                    sortBySelect.dispatchEvent(new Event("change"));
 
-        sortBySelect.dispatchEvent(new Event("change"));
+        }
     }
 
     async function loadCourses(container) {
@@ -142,7 +147,38 @@
     async function createCourseCard(course) {
         const card = createElement("div", "course-card");
 
+        const titleWrapper = createElement("div", "course-title-wrapper");
+
         const title = createElement("h3", "course-title", course.title);
+        
+        const editBtn = createElement("button", "course-action-btn", "✏️");
+        const deleteBtn = createElement("button", "course-action-btn", "❌");
+    
+        editBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            console.log("Edit course.");
+            openEditCourseModal(course);
+        });
+    
+        deleteBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            console.log("Delete course.");
+            createConfirmModal("Are you sure you want to delete this course?", 
+                async () => {
+                    const hideOverlay = showLoadingOverlay();
+    
+                    try{
+                        await deleteCourse(course.id);
+                        renderCourses();
+                    }
+                    finally{
+                        hideOverlay();
+                    }
+                }, null, "NOTE: If you delete this course, every task and note connected to it will also be deleted!"
+            )
+        });
+
+        titleWrapper.append(title, editBtn, deleteBtn);
         
         let professorText = `Prof. ${course.professorId}`;
         try {
@@ -170,13 +206,7 @@
             footer.appendChild(passBtn);
         }
 
-        const removeBtn = createElement("button", "btn-remove", "Remove");
-        removeBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            handleCourseRemove(course.id);
-        });
-
-        card.append(title, professor, semester, description, footer, removeBtn);
+        card.append(titleWrapper, professor, semester, description, footer);
 
         card.addEventListener("click", () => openEditCourseModal(course));
         card.style.cursor = "pointer";
@@ -392,6 +422,9 @@
         const form = createElement("form", "course-form");
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
+
+            const hideOverlay = showLoadingOverlay();
+
             const formData = new FormData(e.target);
             const grade = parseInt(formData.get("grade"));
     
@@ -408,6 +441,7 @@
             try {
                 await updateCourse(course.id,courseData);
                 overlay.remove();
+                hideOverlay();
                 renderCourses();
             } catch (err) {
                 alert("Greška pri polaganju ispita: " + err.message);

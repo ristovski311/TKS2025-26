@@ -25,11 +25,7 @@ namespace Backend.Repositories
         }
         public async Task<IEnumerable<TaskItem>> GetAllByUserIdAsync(int UserId)
         {
-            var courses = await _supabase.From<Course>().Where(t => t.UserId == UserId).Get();
-            var courseIds = courses.Models.Select(c => c.Id).ToList();
-
-            var tasks = await _supabase.From<TaskItem>().Filter(t => t.CourseId, Supabase.Postgrest.Constants.Operator.In, courseIds).Get();
-
+            var tasks = await _supabase.From<TaskItem>().Where(t => t.UserId == UserId).Get();
             return tasks.Models;
         }
 

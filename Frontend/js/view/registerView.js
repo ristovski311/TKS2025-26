@@ -15,7 +15,20 @@ export function renderRegister() {
 
     const username = createInput("text", "Username", "register-username");
     const email = createInput("email", "Email", "register-email");
-    const password = createInput("password", "Password", "register-pass");
+    const passwordInput = createInput("password", "Password", "register-pass");
+
+    const passwordWrapper = createElement("div", "password-wrapper");
+    const toggleBtn = createElement("button", "toggle-password");
+    toggleBtn.type = "button";
+    toggleBtn.textContent = "👁️";
+    toggleBtn.setAttribute("aria-label", "Toggle password visibility");
+    toggleBtn.addEventListener("click", () => {
+        const isHidden = passwordInput.type === "password";
+        passwordInput.type = isHidden ? "text" : "password";
+        toggleBtn.textContent = isHidden ? "🔒" : "👁️";
+    });
+    passwordWrapper.append(passwordInput, toggleBtn);
+
     const firstName = createInput("text", "First name", "register-first-name");
     const lastName = createInput("text", "Last name", "register-last-name");
     const semester = createInput("number", "Semester", "register-semester");
@@ -24,7 +37,7 @@ export function renderRegister() {
     const button = createButton("Register");
     const error = createError();
 
-    form.append(username, email, password, firstName, lastName, semester, phone, button);
+    form.append(username, email, passwordWrapper, firstName, lastName, semester, phone, button);
     form.addEventListener("submit", handleRegister);
 
     const switchText = createElement("p", "auth-switch", "Already a user?");

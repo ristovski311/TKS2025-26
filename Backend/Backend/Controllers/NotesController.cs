@@ -17,14 +17,6 @@ namespace Backend.Controllers
             _repository = repository;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<NoteDto>>> GetAll()
-        {
-            var notes = await _repository.GetAllAsync();
-            var noteDtos = notes.Select(n => n.ToDto());
-            return Ok(noteDtos);
-        }
-
         [HttpGet("{id}")]
         public async Task<ActionResult<NoteDto>> GetById(int id)
         {
