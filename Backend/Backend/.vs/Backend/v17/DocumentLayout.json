@@ -3,10 +3,45 @@
   "WorkspaceRootPath": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{EB9FBD5A-5AFB-4A9F-8445-C99BF2F5435D}|..\\BackendTest\\BackendTest.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backendtest\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backend\\dtos\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|solutionrelative:dtos\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backend\\dtos\\taskdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|solutionrelative:dtos\\taskdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backend\\dtos\\professordto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|solutionrelative:dtos\\professordto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backend\\dtos\\notedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|solutionrelative:dtos\\notedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backend\\dtos\\coursedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|solutionrelative:dtos\\coursedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backend\\mappings\\mappingextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|solutionrelative:mappings\\mappingextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backend\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|solutionrelative:services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backend\\services\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|solutionrelative:services\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB9FBD5A-5AFB-4A9F-8445-C99BF2F5435D}|..\\BackendTest\\BackendTest.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backendtest\\userstest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{EB9FBD5A-5AFB-4A9F-8445-C99BF2F5435D}|..\\BackendTest\\BackendTest.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backendtest\\taskstest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB9FBD5A-5AFB-4A9F-8445-C99BF2F5435D}|..\\BackendTest\\BackendTest.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backendtest\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{EB9FBD5A-5AFB-4A9F-8445-C99BF2F5435D}|..\\BackendTest\\BackendTest.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backendtest\\professorstest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
@@ -19,6 +54,18 @@
     },
     {
       "AbsoluteMoniker": "D:0:0:{EB9FBD5A-5AFB-4A9F-8445-C99BF2F5435D}|..\\BackendTest\\BackendTest.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backendtest\\authtest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backend\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backend\\controllers\\notescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|solutionrelative:controllers\\notescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|c:\\users\\nikola\\documents\\gitrepos\\tks2025-26\\backend\\backend\\controllers\\coursescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5ADA2BB6-BD8A-FBBA-631C-E748BB1D8E69}|Backend.csproj|solutionrelative:controllers\\coursescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -33,6 +80,162 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "UserDto.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\DTOs\\UserDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\UserDto.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\DTOs\\UserDto.cs",
+              "RelativeToolTip": "DTOs\\UserDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:34:39.564Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TaskDto.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\DTOs\\TaskDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\TaskDto.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\DTOs\\TaskDto.cs",
+              "RelativeToolTip": "DTOs\\TaskDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:34:38.857Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ProfessorDto.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\DTOs\\ProfessorDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\ProfessorDto.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\DTOs\\ProfessorDto.cs",
+              "RelativeToolTip": "DTOs\\ProfessorDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:34:37.986Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "NoteDto.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\DTOs\\NoteDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\NoteDto.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\DTOs\\NoteDto.cs",
+              "RelativeToolTip": "DTOs\\NoteDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:34:37.204Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "CourseDto.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\DTOs\\CourseDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\CourseDto.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\DTOs\\CourseDto.cs",
+              "RelativeToolTip": "DTOs\\CourseDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:34:36.346Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "MappingExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\Mappings\\MappingExtensions.cs",
+              "RelativeDocumentMoniker": "Mappings\\MappingExtensions.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\Mappings\\MappingExtensions.cs",
+              "RelativeToolTip": "Mappings\\MappingExtensions.cs",
+              "ViewState": "AgIAALYAAAAAAAAAAAAmwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:34:27.583Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "UsersTest.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\UsersTest.cs",
+              "RelativeDocumentMoniker": "..\\BackendTest\\UsersTest.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\UsersTest.cs",
+              "RelativeToolTip": "..\\BackendTest\\UsersTest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:30:56.211Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "NotesController.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\Controllers\\NotesController.cs",
+              "RelativeDocumentMoniker": "Controllers\\NotesController.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\Controllers\\NotesController.cs",
+              "RelativeToolTip": "Controllers\\NotesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:26:21.292Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "CoursesController.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\Controllers\\CoursesController.cs",
+              "RelativeDocumentMoniker": "Controllers\\CoursesController.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\Controllers\\CoursesController.cs",
+              "RelativeToolTip": "Controllers\\CoursesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:26:19.856Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Controllers\\AuthController.cs",
+              "ViewState": "AgIAADwAAAAAAAAAAAAowAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:25:25.312Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "IAuthService.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\Services\\IAuthService.cs",
+              "RelativeDocumentMoniker": "Services\\IAuthService.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\Services\\IAuthService.cs",
+              "RelativeToolTip": "Services\\IAuthService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:25:17.513Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\Services\\AuthService.cs",
+              "RelativeDocumentMoniker": "Services\\AuthService.cs",
+              "ToolTip": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\Backend\\Services\\AuthService.cs",
+              "RelativeToolTip": "Services\\AuthService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGMAAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-04T12:24:59.867Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\Program.cs",
               "RelativeDocumentMoniker": "..\\BackendTest\\Program.cs",
@@ -45,7 +248,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 9,
               "Title": "TasksTest.cs",
               "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\TasksTest.cs",
               "RelativeDocumentMoniker": "..\\BackendTest\\TasksTest.cs",
@@ -58,7 +261,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 11,
               "Title": "ProfessorsTest.cs",
               "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\ProfessorsTest.cs",
               "RelativeDocumentMoniker": "..\\BackendTest\\ProfessorsTest.cs",
@@ -71,7 +274,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 12,
               "Title": "NotesTest.cs",
               "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\NotesTest.cs",
               "RelativeDocumentMoniker": "..\\BackendTest\\NotesTest.cs",
@@ -84,7 +287,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 13,
               "Title": "CoursesTest.cs",
               "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\CoursesTest.cs",
               "RelativeDocumentMoniker": "..\\BackendTest\\CoursesTest.cs",
@@ -97,7 +300,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 14,
               "Title": "AuthTest.cs",
               "DocumentMoniker": "C:\\Users\\Nikola\\Documents\\Gitrepos\\TKS2025-26\\Backend\\BackendTest\\AuthTest.cs",
               "RelativeDocumentMoniker": "..\\BackendTest\\AuthTest.cs",
