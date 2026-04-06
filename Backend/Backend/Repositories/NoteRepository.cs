@@ -18,11 +18,11 @@ namespace Backend.Repositories
             return response.Models;
         }
 
-        public async Task<IEnumerable<Note>> GetAllByCourseIdAsync(int courseId)
-        {
-            var response = await _supabase.From<Note>().Where(p => p.CourseId == courseId).Get();
-            return response.Models;
-        }
+        //public async Task<IEnumerable<Note>> GetAllByCourseIdAsync(int courseId)
+        //{
+        //    var response = await _supabase.From<Note>().Where(p => p.CourseId == courseId).Get();
+        //    return response.Models;
+        //}
 
         public async Task<IEnumerable<Note>> GetAllByUserIdAsync(int userId)
         {
@@ -34,8 +34,9 @@ namespace Backend.Repositories
         {
             var response = await _supabase.From<Note>()
                 .Where(n => n.Id == id)
-                .Single();
-            return response;
+                .Get();
+
+            return response.Models.FirstOrDefault();
         }
 
         public async Task<Note> CreateAsync(Note entity)
@@ -58,20 +59,20 @@ namespace Backend.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<Note>> GetNotesByCourseAsync(int courseId)
-        {
-            var response = await _supabase.From<Note>()
-                .Where(n => n.CourseId == courseId)
-                .Get();
-            return response.Models;
-        }
+        //public async Task<IEnumerable<Note>> GetNotesByCourseAsync(int courseId)
+        //{
+        //    var response = await _supabase.From<Note>()
+        //        .Where(n => n.CourseId == courseId)
+        //        .Get();
+        //    return response.Models;
+        //}
 
-        public async Task<IEnumerable<Note>> GetNotesByTypeAsync(string type)
-        {
-            var response = await _supabase.From<Note>()
-                .Where(n => n.Type == type)
-                .Get();
-            return response.Models;
-        }
+        //public async Task<IEnumerable<Note>> GetNotesByTypeAsync(string type)
+        //{
+        //    var response = await _supabase.From<Note>()
+        //        .Where(n => n.Type == type)
+        //        .Get();
+        //    return response.Models;
+        //}
     }
 }

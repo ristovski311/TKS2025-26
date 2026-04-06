@@ -25,20 +25,27 @@ namespace Backend.Controllers
             return Ok(note.ToDto());
         }
 
-        [HttpGet("course/{courseId}")]
-        public async Task<ActionResult<IEnumerable<NoteDto>>> GetByCourse(int courseId)
-        {
-            var notes = await _repository.GetNotesByCourseAsync(courseId);
-            var noteDtos = notes.Select(n => n.ToDto());
-            return Ok(noteDtos);
-        }
+        //[HttpGet("course/{courseId}")]
+        //public async Task<ActionResult<IEnumerable<NoteDto>>> GetByCourse(int courseId)
+        //{
+        //    var notes = await _repository.GetNotesByCourseAsync(courseId);
+        //    var noteDtos = notes.Select(n => n.ToDto());
+        //    return Ok(noteDtos);
+        //}
 
-        [HttpGet("type/{type}")]
-        public async Task<ActionResult<IEnumerable<NoteDto>>> GetByType(string type)
+        //[HttpGet("type/{type}")]
+        //public async Task<ActionResult<IEnumerable<NoteDto>>> GetByType(string type)
+        //{
+        //    var notes = await _repository.GetNotesByTypeAsync(type);
+        //    var noteDtos = notes.Select(n => n.ToDto());
+        //    return Ok(noteDtos);
+        //}
+
+        [HttpGet("userId/{userId:int}")]
+        public async Task<ActionResult> GetByUserId(int userId)
         {
-            var notes = await _repository.GetNotesByTypeAsync(type);
-            var noteDtos = notes.Select(n => n.ToDto());
-            return Ok(noteDtos);
+            var notes = await _repository.GetAllByUserIdAsync(userId);
+            return Ok(notes.Select(x => x.ToDto()));
         }
 
         [HttpPost]
@@ -76,22 +83,14 @@ namespace Backend.Controllers
             return NoContent();
         }
 
-        [HttpGet("courseId/{courseId:int}")]
-
-        public async Task<ActionResult> GetByCourseId(int courseId)
-        {
-            var notes = await _repository.GetAllByCourseIdAsync(courseId);
-            if(!notes.Any()) 
-                return NotFound(new {message = "No notes for this course."});
-            return Ok(notes.Select(x => x.ToDto()));
-        }
-
-        [HttpGet("userId/{userId:int}")]
-
-        public async Task<ActionResult> GetByUserId(int userId)
-        {
-            var notes = await _repository.GetAllByUserIdAsync(userId);
-            return Ok(notes.Select(x => x.ToDto()));
-        }
+        //[HttpGet("courseId/{courseId:int}")]
+        //
+        //public async Task<ActionResult> GetByCourseId(int courseId)
+        //{
+        //    var notes = await _repository.GetAllByCourseIdAsync(courseId);
+        //    if(!notes.Any()) 
+        //        return NotFound(new {message = "No notes for this course."});
+        //    return Ok(notes.Select(x => x.ToDto()));
+        //}
     }
 }
