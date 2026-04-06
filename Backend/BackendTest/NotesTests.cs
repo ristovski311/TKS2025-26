@@ -3,6 +3,7 @@ using Backend.DTOs;
 using Backend.Models;
 using Backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Supabase;
 
@@ -116,6 +117,7 @@ public class NotesTests
     [TearDown]
     public async Task Cleanup()
     {
+        noteController.ModelState.Clear();
         if (testNote != null)
             await noteRep.DeleteAsync(testNote.Id);
         if (testFolder != null)
@@ -160,23 +162,69 @@ public class NotesTests
 
     #endregion GET (READ)
 
+    #region GET_BY_USER_ID (READ)
+
+    [Test]
+    public async Task GetByUserId_ReturnsOk()
+    {
+        var result = await noteController.GetByUserId(testUser.Id);
+
+        var okResult = result as OkObjectResult;
+        var notes = okResult!.Value as IEnumerable<NoteDto>;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(okResult, Is.Not.Null);
+            Assert.That(notes, Is.Not.Null);
+            Assert.That(notes!.Count(), Is.GreaterThanOrEqualTo(2)); //Note i folder test koji smo u setup kreirali
+        });
+    }
+
+    [Test]
+    public async Task GetByUserId_ReturnsEmptyList()
+    {
+        int nonExistentUser = -1;
+
+        var result = await noteController.GetByUserId(nonExistentUser);
+
+        var okResult = result as OkObjectResult;
+        var notes = okResult!.Value as IEnumerable<NoteDto>;
+
+        Assert.That(notes, Is.Empty);
+    }
+
+    [Test]
+    public async Task GetByUserId_AreAllNotesByTheSameUser()
+    {
+        var result = await noteController.GetByUserId(testUser.Id);
+
+        var okResult = result as OkObjectResult;
+        var notes = okResult!.Value as IEnumerable<NoteDto>;
+
+        Assert.That(notes!.All(n => n.UserId == testUser.Id), Is.True);
+    }
+
+
+    #endregion GET_BY_USER_ID (READ)
 
     #region CREATE
 
     [Test]
-    public async Task Create_ReturnsCreated_WhenValid()
+    public async Task Create_ReturnsCreated()
     {
         var dto = new CreateNoteDto
         {
             Title = "Created Test Note",
-            Description = "Ovo je kreirana nota",
-            Content = "Sadrzaj",
+            Description = "Ovo je note kojeg kreiramo",
+            Content = "Sadrzaj note-a kojeg kreiramo",
             Type = "Note",
             CourseId = testCourse.Id,
+            ParentId = null,
             UserId = testUser.Id
         };
 
         var result = await noteController.Create(dto);
+
         var created = result.Result as CreatedAtActionResult;
         Assert.That(created, Is.Not.Null);
 
@@ -185,68 +233,138 @@ public class NotesTests
     }
 
     [Test]
-    public async Task Create_PersistsNote_CanBeRetrievedAfterCreation()
+    public async Task Create_NoteInFolder()
     {
         var dto = new CreateNoteDto
         {
-            Title = "Persistent Note",
-            Description = "Ovo je perzistentna nota",
-            Content = "Sadrzaj",
+            Title = "Note koji je u folderu",
+            Description = "Ovo je note u folderu",
+            Content = "Sadrzaj note-a koji je u folderu",
             Type = "Note",
             CourseId = testCourse.Id,
-            UserId = testUser.Id
-        };
-
-        var createResult = await noteController.Create(dto);
-        var created = (createResult.Result as CreatedAtActionResult)!.Value as Backend.DTOs.NoteDto;
-
-        var getResult = await noteController.GetById(created!.Id);
-        var ok = getResult.Result as OkObjectResult;
-        Assert.That(ok, Is.Not.Null);
-
-        await noteRep.DeleteAsync(created.Id);
-    }
-
-    [Test]
-    public async Task Create_ReturnsCorrectData_WhenValid()
-    {
-        var dto = new CreateNoteDto
-        {
-            Title = "Data Check Note",
-            Description = "Opis",
-            Content = "Sadrzaj",
-            Type = "Note",
-            CourseId = testCourse.Id,
+            ParentId = testFolder.Id,
             UserId = testUser.Id
         };
 
         var result = await noteController.Create(dto);
-        var created = (result.Result as CreatedAtActionResult)!.Value as Backend.DTOs.NoteDto;
+        var created = result.Result as CreatedAtActionResult;
+        var createdDto = created!.Value as NoteDto;
+        Assert.That(createdDto!.ParentId, Is.EqualTo(testFolder.Id));
 
-        Assert.Multiple(() =>
+        await noteRep.DeleteAsync(createdDto.Id);
+    }
+
+    [Test]
+    public async Task Create_ReturnsBadReqeust()
+    {
+        var dto = new CreateNoteDto
         {
-            Assert.That(created!.Title, Is.EqualTo("Data Check Note"));
-            Assert.That(created.UserId, Is.EqualTo(testUser.Id));
-            Assert.That(created.CourseId, Is.EqualTo(testCourse.Id));
-            Assert.That(created.Type, Is.EqualTo("Note"));
-        });
+            Description = "Ovo je note bez naslova",
+            Content = "Sadrzaj note-a koji nema naslov",
+            Type = "Note",
+            CourseId = testCourse.Id,
+            ParentId = null,
+            UserId = testUser.Id
+        };
+        //postoji greska sa title-om
+        noteController.ModelState.AddModelError("Title", "Title is required");
 
-        await noteRep.DeleteAsync(created!.Id);
+        var result = await noteController.Create(dto);
+
+        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
     }
 
 
 
     #endregion CREATE
 
-
     #region UPDATE
 
+    [Test]
+    public async Task Update_ReturnsOk()
+    {
+        string noviTitle = "Novi naslov";
+
+        var dto = new UpdateNoteDto
+        {
+            Title = noviTitle,
+            UserId = testUser.Id
+        };
+
+        var result = await noteController.Update(testNote.Id, dto);
+        var okRes = result.Result as OkObjectResult;
+
+        var updatedDto = okRes!.Value as NoteDto;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(okRes, Is.Not.Null);
+            Assert.That(updatedDto!.Id, Is.EqualTo(testNote.Id));
+            Assert.That(updatedDto.Title, Is.EqualTo(noviTitle));
+        });
+    }
+
+    [Test]
+    public async Task Update_ReturnsNotFound()
+    {
+        string noviTitle = "Novi naslov za neuspeh";
+
+        var dto = new UpdateNoteDto
+        {
+            Title = noviTitle,
+            UserId = testUser.Id
+        };
+
+        var result = await noteController.Update(-1, dto);
+        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
+    }
+
+    [Test]
+    public async Task Update_ReturnsBadRequest()
+    {
+        string noviTitle = "Novi naslov za bad request mora da bude predugacak zato ovaj tekst simulira da je title bio izuzetno izuzetno predugacak da bih mogao uopste da se smatra za title note-a kako bismo testirali da on zapravo ne moze da bude stavljen kao note title i s tim nas test ce to pokazati .";
+
+        var dto = new UpdateNoteDto
+        {
+            Title = noviTitle,
+            UserId = testUser.Id
+        };
+
+        noteController.ModelState.AddModelError("Title", "Title is too long");
+
+        var result = await noteController.Update(testNote.Id, dto);
+        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
+    }
 
     #endregion UPDATE
 
-
     #region DELETE
 
+    [Test]
+    public async Task Delete_ReturnsOk()
+    {
+        var result = await noteController.Delete(testNote.Id);
+
+        Assert.That(result, Is.InstanceOf<NoContentResult>());
+    }
+
+    [Test]
+    public async Task Delete_NotFound()
+    {
+        var result = await noteController.Delete(-1);
+
+        Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
+    }
+
+    [Test]
+    public async Task Delete_IsReallyRemoved()
+    {
+        await noteController.Delete(testFolder.Id);
+
+        var getResult = await noteController.GetById(testFolder.Id);
+
+        Assert.That(getResult.Result, Is.InstanceOf<NotFoundObjectResult>());
+    }
 
     #endregion DELETE
 
