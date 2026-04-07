@@ -178,6 +178,8 @@ public class AuthTest
             Phone = "1234"
         });
 
+        await Task.Delay(1000);
+
         var result = await authController.Login(new LoginDto
         {
             Email = TestEmail,
@@ -203,6 +205,8 @@ public class AuthTest
             Semester = 1,
             Phone = "1234"
         });
+
+        await Task.Delay(1000);
 
         var result = await authController.Login(new LoginDto
         {

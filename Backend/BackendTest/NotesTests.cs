@@ -144,7 +144,7 @@ public class NotesTests
         int id = testingFolder ? testFolder.Id : testNote.Id;
         var result = await noteController.GetById(id);
         var ok = result.Result as OkObjectResult;
-        var dto = ok!.Value as Backend.DTOs.NoteDto;
+        var dto = ok!.Value as NoteDto;
 
         Assert.That(dto!.Type, Is.EqualTo(expectedType));
     }
@@ -155,7 +155,7 @@ public class NotesTests
         var result = await noteController.GetById(testNote.Id);
         Console.WriteLine(testFolder.Id);
         var ok = result.Result as OkObjectResult;
-        var dto = ok!.Value as Backend.DTOs.NoteDto;
+        var dto = ok!.Value as NoteDto;
 
         Assert.That(dto!.Title, Is.EqualTo("Test Note"));
     }
@@ -228,7 +228,7 @@ public class NotesTests
         var created = result.Result as CreatedAtActionResult;
         Assert.That(created, Is.Not.Null);
 
-        var createdDto = created!.Value as Backend.DTOs.NoteDto;
+        var createdDto = created!.Value as NoteDto;
         await noteRep.DeleteAsync(createdDto!.Id);
     }
 

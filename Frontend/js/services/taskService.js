@@ -1,24 +1,5 @@
 import { API_ENDPOINTS } from '../config/config.js';
 
-export async function getTasks() {
-    try {
-        const response = await fetch(API_ENDPOINTS.TASKS, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include"
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch tasks");
-        }
-
-        return await response.json();
-    } catch (err) {
-        console.error("Cannot get tasks:", err);
-        throw err;
-    }
-}
-
 export async function getTasksByUser(userId) {
     try {
         const response = await fetch(API_ENDPOINTS.TASKS_BY_USER(userId), {

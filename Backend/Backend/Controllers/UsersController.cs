@@ -17,13 +17,13 @@ namespace Backend.Controllers
             _repository = repository;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetAll()
-        {
-            var users = await _repository.GetAllAsync();
-            var userDtos = users.Select(u => u.ToDto());
-            return Ok(userDtos);
-        }
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<UserDto>>> GetAll()
+        //{
+        //    var users = await _repository.GetAllAsync();
+        //    var userDtos = users.Select(u => u.ToDto());
+        //    return Ok(userDtos);
+        //}
 
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDto>> GetById(int id)
@@ -33,13 +33,13 @@ namespace Backend.Controllers
             return Ok(user.ToDto());
         }
 
-        [HttpGet("semester/{semester}")]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetBySemester(int semester)
-        {
-            var users = await _repository.GetUsersBySemesterAsync(semester);
-            var userDtos = users.Select(u => u.ToDto());
-            return Ok(userDtos);
-        }
+        //[HttpGet("semester/{semester}")]
+        //public async Task<ActionResult<IEnumerable<UserDto>>> GetBySemester(int semester)
+        //{
+        //    var users = await _repository.GetUsersBySemesterAsync(semester);
+        //    var userDtos = users.Select(u => u.ToDto());
+        //    return Ok(userDtos);
+        //}
 
         [HttpPost]
         public async Task<ActionResult<UserDto>> Create([FromBody] CreateUserDto dto)
@@ -52,28 +52,28 @@ namespace Backend.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created.ToDto());
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<UserDto>> Update(int id, [FromBody] UpdateUserDto dto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+        //[HttpPut("{id}")]
+        //public async Task<ActionResult<UserDto>> Update(int id, [FromBody] UpdateUserDto dto)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
 
-            var user = await _repository.GetByIdAsync(id);
-            if (user == null) return NotFound(new { message = "User not found" });
+        //    var user = await _repository.GetByIdAsync(id);
+        //    if (user == null) return NotFound(new { message = "User not found" });
 
-            user.UpdateFromDto(dto);
-            var updated = await _repository.UpdateAsync(user);
-            return Ok(updated.ToDto());
-        }
+        //    user.UpdateFromDto(dto);
+        //    var updated = await _repository.UpdateAsync(user);
+        //    return Ok(updated.ToDto());
+        //}
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
-        {
-            var user = await _repository.GetByIdAsync(id);
-            if (user == null) return NotFound(new { message = "User not found" });
+        //[HttpDelete("{id}")]
+        //public async Task<ActionResult> Delete(int id)
+        //{
+        //    var user = await _repository.GetByIdAsync(id);
+        //    if (user == null) return NotFound(new { message = "User not found" });
 
-            await _repository.DeleteAsync(id);
-            return NoContent();
-        }
+        //    await _repository.DeleteAsync(id);
+        //    return NoContent();
+        //}
     }
 }

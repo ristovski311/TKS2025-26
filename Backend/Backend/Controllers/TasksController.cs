@@ -16,13 +16,13 @@ namespace Backend.Controllers
             _repository = repository;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<TaskDto>>> GetAll()
-        {
-            var tasks = await _repository.GetAllAsync();
-            var taskDtos = tasks.Select(t => t.ToDto());
-            return Ok(taskDtos);
-        }
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<TaskDto>>> GetAll()
+        //{
+        //    var tasks = await _repository.GetAllAsync();
+        //    var taskDtos = tasks.Select(t => t.ToDto());
+        //    return Ok(taskDtos);
+        //}
 
         [HttpGet("{id}")]
         public async Task<ActionResult<TaskDto>> GetById(int id)
@@ -32,21 +32,21 @@ namespace Backend.Controllers
             return Ok(task.ToDto());
         }
 
-        [HttpGet("course/{courseId}")]
-        public async Task<ActionResult<IEnumerable<TaskDto>>> GetByCourse(int courseId)
-        {
-            var tasks = await _repository.GetTasksByCourseAsync(courseId);
-            var taskDtos = tasks.Select(t => t.ToDto());
-            return Ok(taskDtos);
-        }
+        //[HttpGet("course/{courseId}")]
+        //public async Task<ActionResult<IEnumerable<TaskDto>>> GetByCourse(int courseId)
+        //{
+        //    var tasks = await _repository.GetTasksByCourseAsync(courseId);
+        //    var taskDtos = tasks.Select(t => t.ToDto());
+        //    return Ok(taskDtos);
+        //}
 
-        [HttpGet("pending")]
-        public async Task<ActionResult<IEnumerable<TaskDto>>> GetPending()
-        {
-            var tasks = await _repository.GetPendingTasksAsync();
-            var taskDtos = tasks.Select(t => t.ToDto());
-            return Ok(taskDtos);
-        }
+        //[HttpGet("pending")]
+        //public async Task<ActionResult<IEnumerable<TaskDto>>> GetPending()
+        //{
+        //    var tasks = await _repository.GetPendingTasksAsync();
+        //    var taskDtos = tasks.Select(t => t.ToDto());
+        //    return Ok(taskDtos);
+        //}
 
         [HttpPost]
         public async Task<ActionResult<TaskDto>> Create([FromBody] CreateTaskDto dto)
@@ -83,15 +83,15 @@ namespace Backend.Controllers
             return NoContent();
         }
 
-        [HttpGet("courseId/{courseId:int}")]
-        public async Task<ActionResult> GetByCourseId(int courseId)
-        {
-            var tasks = await _repository.GetAllByCourseIdAsync(courseId);
-            if (!tasks.Any())
-                return NotFound(new { message = "No tasks for this course." });
+        //[HttpGet("courseId/{courseId:int}")]
+        //public async Task<ActionResult> GetByCourseId(int courseId)
+        //{
+        //    var tasks = await _repository.GetAllByCourseIdAsync(courseId);
+        //    if (!tasks.Any())
+        //        return NotFound(new { message = "No tasks for this course." });
 
-            return Ok(tasks.Select(p => p.ToDto()));
-        }
+        //    return Ok(tasks.Select(p => p.ToDto()));
+        //}
 
         [HttpGet("userId/{userId:int}")]
 
