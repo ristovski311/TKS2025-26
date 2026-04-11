@@ -159,8 +159,18 @@ dist-ssr
 *.njsproj
 *.sw?
 
-# Visual Studio
+# .NET / Visual Studio
 **/bin/
 **/obj/
-*.user
 .vs/
+*.user
+*.suo
+
+# Build outputs
+*.dll
+*.exe
+*.pdb
+
+# Visual Studio cache
+*.cache
+*.json.bak
