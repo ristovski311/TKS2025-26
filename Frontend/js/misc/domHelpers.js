@@ -4,7 +4,7 @@ import { renderCourses } from '../view/coursesView.js'
 import { renderNotes } from '../view/notesView.js'
 import { renderCalendar } from '../view/calendarView.js'
 import { formatDate } from './utils.js'
-import { logoutUser, getCurrentUser} from '../services/userService.js';
+import { logoutUser, getCurrentUser, deleteUser } from '../services/userService.js';
 import {renderProfessors} from '../view/professorsView.js'
 
 export function clearRoot() {
@@ -73,8 +73,15 @@ export function createHeader() {
     logoutBtn.className = "logout-button";
     logoutBtn.textContent = "Logout";
     logoutBtn.addEventListener("click", handleLogout);
-    rightSection.append(date, logoutBtn);
+    
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-button";
+    deleteBtn.textContent = "Delete account";
+    deleteBtn.addEventListener("click", handleDeleteAccount);
+    rightSection.append(date, deleteBtn, logoutBtn);
     header.append(titleWrapper, rightSection);
+    
     
     return header;
 }
@@ -161,6 +168,28 @@ async function handleLogout() {
                 hideOverlay();
             }
         }
+    )
+}
+
+async function handleDeleteAccount() {
+    createConfirmModal(
+        "Are you sure you want to delete your account?",
+        async () => {
+            const hideOverlay = showLoadingOverlay();
+            try {
+                const user = await getCurrentUser();
+                await deleteUser(user.id);
+                renderLogin();
+            } catch (error) {
+                if (!handleAuthError(error)) {
+                    console.error("Account deletion failed:", error);
+                }
+            } finally {
+                hideOverlay();
+            }
+        },
+        null,
+        "⚠️ This action is permanent and cannot be undone."
     )
 }
 

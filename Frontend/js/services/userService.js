@@ -75,3 +75,16 @@ export async function getCurrentUser() {
         throw err;
     }
 }
+
+export async function deleteUser(userId) {
+    const response = await fetch(API_ENDPOINTS.DELETE_USER(userId), {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+        credentials: "include"
+    });
+
+    if (response.status === 401) throw new Error("SESSION_EXPIRED");
+    if (!response.ok) throw new Error(`Failed to delete account: ${response.status}`);
+
+    clearToken();
+}

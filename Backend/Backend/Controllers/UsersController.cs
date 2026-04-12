@@ -66,14 +66,30 @@ namespace Backend.Controllers
         //    return Ok(updated.ToDto());
         //}
 
-        //[HttpDelete("{id}")]
-        //public async Task<ActionResult> Delete(int id)
-        //{
-        //    var user = await _repository.GetByIdAsync(id);
-        //    if (user == null) return NotFound(new { message = "User not found" });
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var user = await _repository.GetByIdAsync(id);
+            if (user == null) return NotFound(new { message = "User not found" });
 
-        //    await _repository.DeleteAsync(id);
-        //    return NoContent();
-        //}
+            await _repository.DeleteAsync(id);
+
+            var config = new ConfigurationBuilder()
+                    .AddUserSecrets<UsersController>()
+                    .Build();
+            var serviceKey = config["Supabase:ServiceKey"];
+            var supabaseUrl = config["Supabase:Url"];
+
+            using var http = new HttpClient();
+            http.DefaultRequestHeaders.Add("apikey", serviceKey);
+            http.DefaultRequestHeaders.Add("Authorization", $"Bearer {serviceKey}");
+
+            var response = await http.DeleteAsync($"{supabaseUrl}/auth/v1/admin/users/{user.AuthUserId}");
+
+            if (!response.IsSuccessStatusCode)
+                return StatusCode(500, new { message = "User deleted, but auth account removal failed" });
+
+            return NoContent();
+        }
     }
 }

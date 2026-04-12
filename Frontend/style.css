@@ -159,6 +159,22 @@ body {
     background: #dc2626;
 }
 
+.delete-button {
+    padding: 6px 12px;
+    border: none;
+    background: #6b7280;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.delete-button:hover {
+    background: #ef4444;
+}
+.delete-button:active {
+    transform: scale(0.7);
+}
+
 .main-content {
     padding: 20px;
 }

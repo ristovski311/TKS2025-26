@@ -22,5 +22,6 @@ export const API_ENDPOINTS = {
     NOTES: `${API_BASE}/Notes`,
     NOTES_BY_USER: (userId) => `${API_BASE}/Notes/userId/${userId}`,
     TASKS_BY_USER: (userId) => `${API_BASE}/Tasks/userId/${userId}`,
-    COURSES_BY_USER: (userId) => `${API_BASE}/Courses/user/${userId}`
+    COURSES_BY_USER: (userId) => `${API_BASE}/Courses/user/${userId}`,
+    DELETE_USER: (userId) => `${API_BASE}/Users/${userId}`
 };
