@@ -1,5 +1,6 @@
 using Microsoft.Playwright;
 using NUnit.Framework;
+using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -42,9 +43,32 @@ namespace FrontendTest
 
             await page.GotoAsync("http://127.0.0.1:5500/index.html");
 
+            //User podaci za registraciju
+            DateTime now = DateTime.Now;
+
+            string userMail = $"test_{now:yyyyMMddHHmmss}@example.com";
+            string username = $"test_{now:yyyyMMddHHmmss}";
+            string userFirstname = $"test_{now:yyyyMMddHHmmss}_FN";
+            string userLastname = $"test_{now:yyyyMMddHHmmss}_LN";
+            string userPass = $"test_{now:yyyyMMddHHmmss}_pass";
+            int userSemester = 1;
+            string userPhone = "1234";
+
+            //Registracija test korisnika
+            await page.GetByText(new Regex("Register here")).ClickAsync();
+            await page.GetByPlaceholder("Username").FillAsync(username);
+            await page.GetByPlaceholder("First name").FillAsync(userFirstname);
+            await page.GetByPlaceholder("Last name").FillAsync(userLastname);
+            await page.GetByPlaceholder("Email").FillAsync(userMail);
+            await page.GetByPlaceholder("Password").FillAsync(userPass);
+            await page.GetByPlaceholder("Semester").FillAsync(userSemester.ToString());
+            await page.GetByPlaceholder("Phone").FillAsync(userPhone);
+
+            await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex("Register") }).ClickAsync();
+
             // Login uvek pre testova
-            await page.Locator(".login-email").FillAsync("ristovski311@gmail.com");
-            await page.Locator(".login-pass").FillAsync("banana");
+            await page.Locator(".login-email").FillAsync(userMail);
+            await page.Locator(".login-pass").FillAsync(userPass);
             await page.Locator(".toggle-password").ClickAsync();
             await page.Locator(".auth-button").ClickAsync();
 
@@ -86,6 +110,9 @@ namespace FrontendTest
             await card.HoverAsync();
             await card.Locator(".course-action-btn").Nth(1).ClickAsync(new LocatorClickOptions { Force = true });
             await page.Locator(".btn-submit").ClickAsync();
+
+            await page.Locator(".delete-button").ClickAsync();
+            await page.Locator(".modal-overlay .btn-submit").ClickAsync();
 
             if (page != null) await page.CloseAsync();
             if (context != null) await context.CloseAsync();
@@ -143,7 +170,7 @@ namespace FrontendTest
             await page.Locator(".modal-overlay .btn-submit").ClickAsync();
         }
 
-        [Ignore("")]
+        //[Ignore("")]
         [Test]
         public async Task CreateNote_Success()
         {
@@ -171,7 +198,7 @@ namespace FrontendTest
             }
         }
 
-        ///--- 3
+        ///--- 4
 
         //[Ignore("")]
         [Test]
@@ -192,6 +219,341 @@ namespace FrontendTest
             await Assertions.Expect(page.Locator(".modal-overlay")).ToBeVisibleAsync();
         }
 
+        ///--- 5
+
+        //[Ignore("")]
+        [Test]
+        public async Task CreateNote_CancelBtn()
+        {
+            string noteTitle = "Test note";
+            string noteDescription = "Ovo je opis test note-a 1";
+            string noteContent = "Ovo je sadrzaj test note-a 1";
+            int noteIndex = 1;
+
+            await page.Locator(".main-nav-item-notes").ClickAsync();
+
+            await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*New Note.*") }).ClickAsync();
+            await FillNoteModal(noteTitle, noteDescription, noteContent, noteIndex);
+            await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Cancel.*") }).ClickAsync();
+
+            var card = page!.Locator(".note-card").Filter(new() { HasTextString = noteTitle });
+            await Assertions.Expect(card).ToHaveCountAsync(0);
+        }
+
+        ///--- 6
+
+        //[Ignore("")]
+        [Test]
+        public async Task CreateNote_CloseModal()
+        {
+            string noteTitle = "Test note";
+            string noteDescription = "Ovo je opis test note-a 1";
+            string noteContent = "Ovo je sadrzaj test note-a 1";
+            int noteIndex = 1;
+
+            await page.Locator(".main-nav-item-notes").ClickAsync();
+
+            await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*New Note.*") }).ClickAsync();
+            await FillNoteModal(noteTitle, noteDescription, noteContent, noteIndex);
+            await page.Locator(".modal-close").ClickAsync();
+
+            var card = page!.Locator(".note-card").Filter(new() { HasTextString = noteTitle });
+            await Assertions.Expect(card).ToHaveCountAsync(0);
+        }
+
+        ///--- 7
+
+        //[Ignore("")]
+        [Test]
+        public async Task EditNote_Title()
+        {
+            string noteTitle = "Test note";
+            string noteTitleEdited = "Test note edited";
+            string noteDescription = "Ovo je opis test note-a 1";
+            string noteContent = "Ovo je sadrzaj test note-a 1";
+            int noteIndex = 1;
+
+            try
+            {
+                await page.Locator(".main-nav-item-notes").ClickAsync();
+
+                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*New Note.*") }).ClickAsync();
+                await FillNoteModal(noteTitle, noteDescription, noteContent, noteIndex);
+                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create Note.*") }).ClickAsync();
+
+                await Task.Delay(1000);
+
+                var card = page.Locator(".note-card").Filter(new() { HasTextString = noteTitle });
+
+                await card.HoverAsync();
+                await card.Locator(".note-action-btn").Nth(0).WaitForAsync(new() { State = WaitForSelectorState.Visible });
+                await card.Locator(".note-action-btn").Nth(0).ClickAsync();
+
+                await FillNoteModal(noteTitleEdited, noteDescription, noteContent, noteIndex);
+
+                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Save changes.*") }).ClickAsync();
+                await Task.Delay(1000);
+
+                card = page.Locator(".note-card").Filter(new() { HasTextString = noteTitleEdited });
+
+                await Assertions.Expect(card).ToBeVisibleAsync();
+            }
+            finally
+            {
+                await DeleteNote(noteTitle);
+            }
+        }
+
+        ///--- 8
+
+        //[Ignore("")]
+        [Test]
+        public async Task EditNote_Cancel()
+        {
+            string noteTitle = "Test note";
+            string noteTitleEdited = "Test note edited";
+            string noteDescription = "Ovo je opis test note-a 1";
+            string noteContent = "Ovo je sadrzaj test note-a 1";
+            int noteIndex = 1;
+
+            try
+            {
+                await page.Locator(".main-nav-item-notes").ClickAsync();
+
+                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*New Note.*") }).ClickAsync();
+                await FillNoteModal(noteTitle, noteDescription, noteContent, noteIndex);
+                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create Note.*") }).ClickAsync();
+
+                await Task.Delay(1000);
+
+                var card = page.Locator(".note-card").Filter(new() { HasTextString = noteTitle });
+
+                await card.HoverAsync();
+                await card.Locator(".note-action-btn").Nth(0).WaitForAsync(new() { State = WaitForSelectorState.Visible });
+                await card.Locator(".note-action-btn").Nth(0).ClickAsync();
+
+                await FillNoteModal(noteTitleEdited, noteDescription, noteContent, noteIndex);
+
+                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Cancel.*") }).ClickAsync();
+                await Task.Delay(500);
+                card = page.Locator(".note-card").Filter(new() { HasTextString = noteTitleEdited });
+
+                await Assertions.Expect(card).ToHaveCountAsync(0);
+            }
+            finally
+            {
+                await DeleteNote(noteTitle);
+            }
+        }
+
+        //--- 9
+
+        //[Ignore("")]
+        [Test]
+        public async Task DeleteNote_Success()
+        {
+            string noteTitle = "Test note";
+            string noteDescription = "Ovo je opis test note-a 1";
+            string noteContent = "Ovo je sadrzaj test note-a 1";
+            int noteIndex = 1;
+
+            await page.Locator(".main-nav-item-notes").ClickAsync();
+
+            await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*New Note.*") }).ClickAsync();
+            await FillNoteModal(noteTitle, noteDescription, noteContent, noteIndex);
+            await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create Note.*") }).ClickAsync();
+
+            await Task.Delay(500);//Sacekamo da se kreira note
+
+            await DeleteNote(noteTitle); //Brisemo note
+
+            var card = page.Locator(".note-card").Filter(new() { HasTextString = noteTitle });
+            await Assertions.Expect(card).ToHaveCountAsync(0);
+        }
+
+        //--- 10
+
+        //[Ignore("")]
+        [Test]
+        public async Task DeleteNote_Cancel()
+        {
+            string noteTitle = "Test note";
+            string noteDescription = "Ovo je opis test note-a 1";
+            string noteContent = "Ovo je sadrzaj test note-a 1";
+            int noteIndex = 1;
+
+            await page.Locator(".main-nav-item-notes").ClickAsync();
+
+            try
+            {
+                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*New Note.*") }).ClickAsync();
+                await FillNoteModal(noteTitle, noteDescription, noteContent, noteIndex);
+                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create Note.*") }).ClickAsync();
+
+                await Task.Delay(500);//Sacekamo da se kreira note
+
+                var card = page.Locator(".note-card").Filter(new() { HasTextString = noteTitle });
+                await card.HoverAsync();
+                await card.Locator(".note-action-btn").Nth(1).WaitForAsync(new() { State = WaitForSelectorState.Visible });
+                await card.Locator(".note-action-btn").Nth(1).ClickAsync(new LocatorClickOptions { Force = true });
+                await page.Locator(".modal-overlay .btn-cancel").ClickAsync();
+
+                card = page.Locator(".note-card").Filter(new() { HasTextString = noteTitle });
+                await Assertions.Expect(card).ToBeVisibleAsync();
+            }
+            finally
+            {
+                await DeleteNote(noteTitle);
+            }
+            
+        }
+
+        //--- 11
+
+        //Pomocna fja za brisanje foldera
+
+        public async Task DeleteFolder(string title)
+        {
+            var modal = page!.Locator(".modal-overlay");
+            if (await modal.IsVisibleAsync())
+                await page.Locator(".modal-close").ClickAsync();
+            
+            var folderList = page.Locator(".folder-list");
+            var folderCard = folderList.Locator(".folder-item").Filter(new() { HasTextString = title });
+            await folderCard.HoverAsync();
+            await folderCard.Locator(".folder-action-btn").Nth(1).WaitForAsync(new() { State = WaitForSelectorState.Visible });
+            await folderCard.Locator(".folder-action-btn").Nth(1).ClickAsync(new LocatorClickOptions { Force = true });
+            await page.Locator(".modal-overlay .btn-submit").ClickAsync();
+        }
+
+        //[Ignore("")]
+        [Test]
+        public async Task CreateFolder_Success()
+        {
+            string folderTitle = "Test folder";
+
+            await page.Locator(".main-nav-item-notes").ClickAsync();
+
+            try{
+                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*New Folder.*") }).ClickAsync();
+                var modal = page.Locator(".modal-overlay");
+                await modal.Locator(".form-input").FillAsync(folderTitle);
+                await modal.Locator(".btn-submit").ClickAsync();
+
+                await Task.Delay(1000);
+
+                var folderList = page.Locator(".folder-list");
+
+                await Assertions.Expect(folderList.Locator(".folder-item").Filter(new() { HasTextString = folderTitle })).ToHaveCountAsync(1);
+            }
+            finally
+            {
+                await DeleteFolder(folderTitle);
+            }
+        }
+
+        //--- 12
+
+        //[Ignore("")]
+        [Test]
+        public async Task CreateFolder_EmptyTitle()
+        {
+            string folderTitle = "";
+
+            await page.Locator(".main-nav-item-notes").ClickAsync();
+
+            await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*New Folder.*") }).ClickAsync();
+            var modal = page.Locator(".modal-overlay");
+            await modal.Locator(".form-input").FillAsync(folderTitle);
+            await modal.Locator(".btn-submit").ClickAsync();
+
+            await Task.Delay(1000);
+
+            var folderList = page.Locator(".folder-list");
+
+            await Assertions.Expect(modal).ToBeVisibleAsync();
+        }
+
+        //--- 13
+
+        //[Ignore("")]
+        [Test]
+        public async Task EditFolder_Success()
+        {
+            string folderTitle = "Test folder 1";
+            string folderTitleEdited = "New folder title";
+
+            await page.Locator(".main-nav-item-notes").ClickAsync();
+
+            try
+            {
+                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*New Folder.*") }).ClickAsync();
+                var modal = page.Locator(".modal-overlay");
+                await modal.Locator(".form-input").FillAsync(folderTitle);
+                await modal.Locator(".btn-submit").ClickAsync();
+
+                await Task.Delay(1000);
+
+                var folderList = page.Locator(".folder-list");
+                var folderCard = folderList.Locator(".folder-item").Filter(new() { HasTextString = folderTitle });
+
+                await folderCard.HoverAsync();
+                await folderCard.Locator(".folder-action-btn").Nth(0).WaitForAsync(new() { State = WaitForSelectorState.Visible });
+                await folderCard.Locator(".folder-action-btn").Nth(0).ClickAsync(new LocatorClickOptions { Force = true });
+
+                modal = page.Locator(".modal-overlay");
+                await modal.Locator(".form-input").FillAsync(folderTitleEdited);
+                await modal.Locator(".btn-submit").ClickAsync();
+
+                await Assertions.Expect(folderList.Locator(".folder-item").Filter(new() { HasTextString = folderTitleEdited })).ToHaveCountAsync(1);
+            }
+            finally
+            {
+                await DeleteFolder(folderTitleEdited);
+            }
+        }
+
+        //--- 14
+
+        //[Ignore("")]
+        [Test]
+        public async Task EditFolder_EmptyTitle()
+        {
+            string folderTitle = "Test folder 1";
+            string folderTitleEdited = "";
+
+            await page.Locator(".main-nav-item-notes").ClickAsync();
+
+            try
+            {
+                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*New Folder.*") }).ClickAsync();
+                var modal = page.Locator(".modal-overlay");
+                await modal.Locator(".form-input").FillAsync(folderTitle);
+                await modal.Locator(".btn-submit").ClickAsync();
+
+                await Task.Delay(1000);
+
+                var folderList = page.Locator(".folder-list");
+                var folderCard = folderList.Locator(".folder-item").Filter(new() { HasTextString = folderTitle });
+
+                await folderCard.HoverAsync();
+                await folderCard.Locator(".folder-action-btn").Nth(0).WaitForAsync(new() { State = WaitForSelectorState.Visible });
+                await folderCard.Locator(".folder-action-btn").Nth(0).ClickAsync(new LocatorClickOptions { Force = true });
+
+                modal = page.Locator(".modal-overlay");
+                await modal.Locator(".form-input").FillAsync(folderTitleEdited);
+                await modal.Locator(".btn-submit").ClickAsync();
+
+                await Assertions.Expect(modal).ToBeVisibleAsync();
+            }
+            finally
+            {
+                await DeleteFolder(folderTitle);
+            }
+        }
+
+        //TODO:
+        // provera note-ova u vise foldera
 
     }
 }
