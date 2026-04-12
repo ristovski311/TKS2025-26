@@ -36,10 +36,32 @@ namespace FrontendTest
 
             await page.GotoAsync("http://127.0.0.1:5500/index.html");
 
-            // Login uvek pre testova
+            //User podaci za registraciju
+            DateTime now = DateTime.Now;
 
-            await page.Locator(".login-email").FillAsync("ristovski311@gmail.com");
-            await page.Locator(".login-pass").FillAsync("banana");
+            string userMail = $"test_{now:yyyyMMddHHmmss}@example.com";
+            string username = $"test_{now:yyyyMMddHHmmss}";
+            string userFirstname = $"test_{now:yyyyMMddHHmmss}_FN";
+            string userLastname = $"test_{now:yyyyMMddHHmmss}_LN";
+            string userPass = $"test_{now:yyyyMMddHHmmss}_pass";
+            int userSemester = 1;
+            string userPhone = "1234";
+
+            //Registracija test korisnika
+            await page.GetByText(new Regex("Register here")).ClickAsync();
+            await page.GetByPlaceholder("Username").FillAsync(username);
+            await page.GetByPlaceholder("First name").FillAsync(userFirstname);
+            await page.GetByPlaceholder("Last name").FillAsync(userLastname);
+            await page.GetByPlaceholder("Email").FillAsync(userMail);
+            await page.GetByPlaceholder("Password").FillAsync(userPass);
+            await page.GetByPlaceholder("Semester").FillAsync(userSemester.ToString());
+            await page.GetByPlaceholder("Phone").FillAsync(userPhone);
+
+            await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex("Register") }).ClickAsync();
+
+            // Login uvek pre testova
+            await page.Locator(".login-email").FillAsync(userMail);
+            await page.Locator(".login-pass").FillAsync(userPass);
             await page.Locator(".toggle-password").ClickAsync();
             await page.Locator(".auth-button").ClickAsync();
 
@@ -68,6 +90,9 @@ namespace FrontendTest
             await card.Locator(".course-action-btn").Nth(1).ClickAsync(new LocatorClickOptions { Force = true });
             await page.Locator(".btn-submit").ClickAsync();
 
+            await page.Locator(".delete-button").ClickAsync();
+            await page.Locator(".modal-overlay .btn-submit").ClickAsync();
+
             if (page != null) await page.CloseAsync();
             if (context != null) await context.CloseAsync();
             if (browser != null) await browser.CloseAsync();
@@ -76,7 +101,7 @@ namespace FrontendTest
 
         //--- 1
 
-        [Ignore("")]
+        //[Ignore("")]
         [Test]
         public async Task NavigateToCoursesPage()
         {
@@ -86,7 +111,7 @@ namespace FrontendTest
 
         //--- 2
 
-        [Ignore("")]
+        //[Ignore("")]
         [Test]
         public async Task AddCourse_OpenModal()
         {
@@ -123,7 +148,7 @@ namespace FrontendTest
 
         //--- 3
 
-        [Ignore("")]
+        //[Ignore("")]
         [Test]
         public async Task AddCourse_Success()
         {
@@ -153,7 +178,7 @@ namespace FrontendTest
 
         //--- 4
 
-        [Ignore("")]
+        //[Ignore("")]
         [Test]
         public async Task AddCourse_EmptyTitle() //Svako polje moze pojedinacno da se testira kad je prazno, ali da ne bi bili repetitivni testovi nisam ih stavio ovde
         {
@@ -174,7 +199,7 @@ namespace FrontendTest
 
         //--- 5
 
-        [Ignore("")]
+        //[Ignore("")]
         [Test]
         public async Task AddCourse_CancelBtn()
         {
@@ -196,7 +221,7 @@ namespace FrontendTest
 
         //--- 6
 
-        [Ignore("")]
+        //[Ignore("")]
         [Test]
         public async Task AddCourse_CloseModal()
         {
@@ -218,7 +243,7 @@ namespace FrontendTest
 
         //--- 7
 
-        [Ignore("")]
+        //[Ignore("")]
         [Test]
         public async Task EditCourse_TitleChanged()
         {
@@ -260,7 +285,7 @@ namespace FrontendTest
 
         //--- 8
 
-        [Ignore("")]
+        //[Ignore("")]
         [Test]
         public async Task EditCourse_Cancel()
         {
@@ -302,7 +327,7 @@ namespace FrontendTest
 
         //--- 9
 
-        [Ignore("")]
+        //[Ignore("")]
         [Test]
         public async Task DeleteCourse_Success()
         {
@@ -326,7 +351,7 @@ namespace FrontendTest
 
         //--- 10
 
-        [Ignore("")]
+        //[Ignore("")]
         [Test]
         public async Task DeleteCourse_Cancel()
         {
@@ -361,7 +386,7 @@ namespace FrontendTest
 
         //--- 11
 
-        [Ignore("")]
+        //[Ignore("")]
         [Test]
         public async Task PassCourse_OpenModal_DisplayRightTitle()
         {
@@ -398,7 +423,7 @@ namespace FrontendTest
 
         //--- 12
 
-        [Ignore("")]
+        //[Ignore("")]
         [Test]
         public async Task PassCourse_Cancel()
         {
@@ -437,7 +462,7 @@ namespace FrontendTest
 
         //--- 13
 
-        [Ignore("")]
+        //[Ignore("")]
         [Test]
         public async Task PassCourse_Success()
         {

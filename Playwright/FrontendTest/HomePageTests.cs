@@ -13,6 +13,14 @@ namespace FrontendTest
         IPage? page;
         IBrowserContext? context;
 
+        string userMail;
+        string username;
+        string userFirstname;
+        string userLastname;
+        string userPass;
+        int userSemester;
+        string userPhone;
+
         [SetUp]
         public async Task Setup()
         {
@@ -28,10 +36,31 @@ namespace FrontendTest
 
             await page.GotoAsync("http://127.0.0.1:5500/index.html");
 
-            // Login uvek pre testova
+            DateTime now = DateTime.Now;
 
-            await page.Locator(".login-email").FillAsync("ristovski311@gmail.com");
-            await page.Locator(".login-pass").FillAsync("banana");
+            userMail = $"test_{now:yyyyMMddHHmmss}@example.com";
+            username = $"test_{now:yyyyMMddHHmmss}";
+            userFirstname = $"test_{now:yyyyMMddHHmmss}_FN";
+            userLastname = $"test_{now:yyyyMMddHHmmss}_LN";
+            userPass = $"test_{now:yyyyMMddHHmmss}_pass";
+            userSemester = 1;
+            userPhone = "1234";
+
+            //Registracija test korisnika
+            await page.GetByText(new Regex("Register here")).ClickAsync();
+            await page.GetByPlaceholder("Username").FillAsync(username);
+            await page.GetByPlaceholder("First name").FillAsync(userFirstname);
+            await page.GetByPlaceholder("Last name").FillAsync(userLastname);
+            await page.GetByPlaceholder("Email").FillAsync(userMail);
+            await page.GetByPlaceholder("Password").FillAsync(userPass);
+            await page.GetByPlaceholder("Semester").FillAsync(userSemester.ToString());
+            await page.GetByPlaceholder("Phone").FillAsync(userPhone);
+
+            await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex("Register") }).ClickAsync();
+
+            // Login uvek pre testova
+            await page.Locator(".login-email").FillAsync(userMail);
+            await page.Locator(".login-pass").FillAsync(userPass);
             await page.Locator(".toggle-password").ClickAsync();
             await page.Locator(".auth-button").ClickAsync();
         }
@@ -39,6 +68,9 @@ namespace FrontendTest
         [TearDown]
         public async Task Cleanup()
         {
+            await page.Locator(".delete-button").ClickAsync();
+            await page.Locator(".modal-overlay .btn-submit").ClickAsync();
+
             if (page != null) await page.CloseAsync();
             if (context != null) await context.CloseAsync();
             if (browser != null) await browser.CloseAsync();
@@ -48,7 +80,7 @@ namespace FrontendTest
         [Test]
         public async Task CorrectUsernameGreeting()
         {
-            await Assertions.Expect(page.Locator(".greeting-text")).ToHaveTextAsync(new Regex(".*ristovski311.*"));
+            await Assertions.Expect(page.Locator(".greeting-text")).ToHaveTextAsync(new Regex($".*{username}.*"));
         }
 
         //----
@@ -64,9 +96,21 @@ namespace FrontendTest
         [Test]
         public async Task LogoutSubmit()
         {
-            await page.Locator(".logout-button").ClickAsync();
-            await page.Locator(".btn-submit").ClickAsync();
-            await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { NameRegex = new Regex(".*Login.*") })).ToBeVisibleAsync();
+            try
+            {
+                await page.Locator(".logout-button").ClickAsync();
+                await page.Locator(".btn-submit").ClickAsync();
+                await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { NameRegex = new Regex(".*Login.*") })).ToBeVisibleAsync();
+
+            }
+            finally
+            {
+                await page.Locator(".login-email").FillAsync(userMail);
+                await page.Locator(".login-pass").FillAsync(userPass);
+                await page.Locator(".toggle-password").ClickAsync();
+                await page.Locator(".auth-button").ClickAsync();
+            }
+
         }
 
         //---
