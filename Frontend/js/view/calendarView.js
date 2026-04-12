@@ -1,5 +1,5 @@
 import { formatDate } from '../misc/utils.js';
-import { createLoader, clearRoot,createElement, createNavBar, showLoadingOverlay, handleAuthError, createConfirmModal } from '../misc/domHelpers.js';
+import { createLoader, clearRoot,createElement, createNavBar, showLoadingOverlay, handleAuthError, createConfirmModal, createHeader } from '../misc/domHelpers.js';
 import { logoutUser} from '../services/userService.js';
 import { renderLogin } from './loginView.js';
 import { renderHome } from './homeView.js';
@@ -62,29 +62,6 @@ export async function renderCalendar() {
     
     content.appendChild(calendarContainer);
     root.appendChild(content);
-}
-
-function createHeader() {
-    const header = createElement("header", "main-header");
-    const title = createElement("h1", "app-title", "NoteIT!");
-    title.style.cursor = "pointer";
-    title.addEventListener("click", renderHome);
-    
-    const rightSection = createElement("div", "header-right");
-    const date = createElement("span", "header-date", formatDate(new Date()));
-    
-    const logoutBtn = document.createElement("button");
-    logoutBtn.className = "logout-button";
-    logoutBtn.textContent = "Logout";
-    logoutBtn.addEventListener("click", async () => {
-        await logoutUser();
-        renderLogin();
-    });
-
-    rightSection.append(date, logoutBtn);
-    header.append(title, rightSection);
-    
-    return header;
 }
 
 function createCalendarHeader() {
