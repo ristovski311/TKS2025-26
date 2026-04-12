@@ -100,13 +100,10 @@ namespace FrontendTest
         public async Task FillCourseModal(string title, int semester, int indexToSelect, string description)
         {
             await page.Locator("[name='title']").FillAsync(title);
-            
             await page.Locator("[name='semester']").FillAsync(semester.ToString());
-
             await page!.WaitForSelectorAsync("select[name='professorId'] option:nth-child(2)",
                                              new PageWaitForSelectorOptions { State = WaitForSelectorState.Attached }); //Sacekamo da se ucitaju profesori
             await page.Locator("[name='professorId']").SelectOptionAsync(new SelectOptionValue { Index = indexToSelect });
-
             await page.Locator(".form-textarea").FillAsync(description);
         }
 
