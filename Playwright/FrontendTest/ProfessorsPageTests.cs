@@ -1,35 +1,465 @@
+﻿using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.Playwright;
 using NUnit.Framework;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace FrontendTest
 {
     [TestFixture]
+    [NonParallelizable]
     public class ProfessorsPageTests
     {
-        [Test]
-        public async Task GoogleSearchTest()
+        IBrowser? browser;
+        IPlaywright? playwright;
+        IPage? page;
+        IBrowserContext? context;
+
+        string uniqueId = "";
+        string testUsername = "";
+        string testEmail = "";
+        string testPassword = "TestPass123!";
+        string testFirstName = "Test";
+        string testLastName = "User";
+        string testSemester = "3";
+        string testPhone = "0600000000";
+
+        string profFirstName = "John";
+        string profLastName = "Doe";
+        string profEmail = "john.doe@example.com";
+        string profPhone = "0611234567";
+        string profOffice = "101";
+
+        [SetUp]
+        public async Task Setup()
         {
-            using var playwright = await Microsoft.Playwright.Playwright.CreateAsync();
-            await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+            uniqueId = Guid.NewGuid().ToString("N").Substring(0, 8);
+            testUsername = $"profuser_{uniqueId}";
+            testEmail = $"profuser_{uniqueId}@example.com";
+
+            playwright = await Playwright.CreateAsync();
+            browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
                 Headless = false,
-                SlowMo = 1000
+                SlowMo = 100
             });
 
-            var context = await browser.NewContextAsync();
-            var page = await context.NewPageAsync();
+            context = await browser.NewContextAsync();
+            page = await context.NewPageAsync();
 
             await page.GotoAsync("http://127.0.0.1:5500/index.html");
 
-
-            await page.Locator(".login-email").FillAsync("ristovski311@gmail.com");
-            await page.Locator(".login-pass").FillAsync("banana");
+            await page.Locator(".auth-link").ClickAsync();
+            await page.Locator(".register-username").FillAsync(testUsername);
+            await page.Locator(".register-email").FillAsync(testEmail);
+            await page.Locator(".register-pass").FillAsync(testPassword);
+            await page.Locator(".register-first-name").FillAsync(testFirstName);
+            await page.Locator(".register-last-name").FillAsync(testLastName);
+            await page.Locator(".register-semester").FillAsync(testSemester);
+            await page.Locator(".register-phone").FillAsync(testPhone);
             await page.Locator(".auth-button").ClickAsync();
 
+            await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { NameString = "Login" }))
+                            .ToBeVisibleAsync(new() { Timeout = 15000 });
+            await page.Locator(".login-email").FillAsync(testEmail);
+            await page.Locator(".login-pass").FillAsync(testPassword);
+            await page.Locator(".auth-button").ClickAsync();
             await Assertions.Expect(page).ToHaveTitleAsync(new Regex(".*NoteIT!.*"));
-            await browser.CloseAsync();
+
+            await page.Locator(".main-nav-item-professors").ClickAsync();
+            await Assertions.Expect(page.Locator(".page-title")).ToHaveTextAsync("My Professors");
+        }
+
+        [TearDown]
+        public async Task Cleanup()
+        {
+            await page!.GotoAsync("http://127.0.0.1:5500/index.html");
+
+            var deleteBtn = page.Locator(".delete-button");
+            try
+            {
+                await deleteBtn.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 5000 });
+                await deleteBtn.ClickAsync();
+                await page.Locator(".btn-submit").ClickAsync();
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+            }
+            catch (TimeoutException) { }
+
+            if (page != null) await page.CloseAsync();
+            if (context != null) await context.CloseAsync();
+            if (browser != null) await browser.CloseAsync();
+            if (playwright != null) playwright.Dispose();
+        }
+
+        public async Task FillProfessorModal(string firstName, string lastName,
+                                              string email, string phone, string office)
+        {
+            await page!.GetByPlaceholder(new Regex("First name")).FillAsync(firstName);
+            await page.GetByPlaceholder(new Regex("Last name")).FillAsync(lastName);
+            await page.GetByPlaceholder(new Regex(".*email@.*")).FillAsync(email);
+            await page.Locator("[name='phone']").FillAsync(phone);
+            await page.Locator("[name='office']").FillAsync(office);
+        }
+
+        public async Task OpenAddProfessorModal()
+        {
+            await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add Professor.*") }).ClickAsync();
+            await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible });
+        }
+
+        public async Task DeleteProfessor(string firstName, string lastName)
+        {
+            await page!.Locator(".courses-grid").WaitForAsync(new() { State = WaitForSelectorState.Visible });
+
+            int modalCount = await page.Locator(".modal-overlay").CountAsync();
+            for (int i = 0; i < modalCount; i++)
+            {
+                try
+                {
+                    await page.Locator(".modal-overlay").Last
+                              .Locator(".modal-close")
+                              .ClickAsync(new() { Timeout = 2000 });
+                    await page.Locator(".modal-overlay").Last
+                              .WaitForAsync(new() { State = WaitForSelectorState.Hidden, Timeout = 2000 });
+                }
+                catch (TimeoutException) { break; }
+            }
+
+            string fullName = $"Prof. {firstName} {lastName}";
+            var card = page.Locator(".course-card").Filter(new() { HasTextString = fullName });
+
+            await card.HoverAsync();
+
+            await card.Locator(".course-action-btn").Nth(1).ClickAsync();
+
+            var confirmModal = page.Locator(".modal-overlay");
+            await confirmModal.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+            await confirmModal.Locator(".btn-submit").ClickAsync();
+            await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+        }
+
+        //--- 1
+
+        [Test]
+        public async Task NavigateToProfessorsPage()
+        {
+            await Assertions.Expect(page!.Locator(".page-title")).ToHaveTextAsync("My Professors");
+        }
+
+        //--- 2
+
+        [Test]
+        public async Task ProfessorsPage_GridIsVisible()
+        {
+            await Assertions.Expect(page!.Locator(".courses-grid")).ToBeVisibleAsync();
+        }
+
+        //--- 3
+
+        [Test]
+        public async Task ProfessorsPage_EmptyStateMessageDisplayed()
+        {
+            await Assertions.Expect(page!.Locator(".empty-message")).ToBeVisibleAsync();
+        }
+
+        //--- 4
+
+        [Test]
+        public async Task AddProfessor_OpenModal()
+        {
+            await OpenAddProfessorModal();
+            await Assertions.Expect(page!.Locator(".modal-overlay")).ToBeVisibleAsync();
+        }
+
+        //--- 5
+
+        [Test]
+        public async Task AddProfessor_ModalHasCorrectTitle()
+        {
+            await OpenAddProfessorModal();
+            await Assertions.Expect(page!.Locator(".modal-title")).ToHaveTextAsync("Add New Professor");
+        }
+
+        //--- 6
+
+        [Test]
+        public async Task AddProfessor_CloseModal()
+        {
+            await OpenAddProfessorModal();
+            await page!.Locator(".modal-close").ClickAsync();
+            await Assertions.Expect(page.Locator(".modal-overlay")).ToBeHiddenAsync();
+        }
+
+        //--- 7
+
+        [Test]
+        public async Task AddProfessor_Success()
+        {
+            try
+            {
+                await OpenAddProfessorModal();
+                await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
+                await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
+
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+
+                await Assertions.Expect(
+                    page.Locator(".course-card")
+                        .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" }))
+                    .ToBeVisibleAsync();
+            }
+            finally
+            {
+                await DeleteProfessor(profFirstName, profLastName);
+            }
+        }
+
+        //--- 8
+
+        [Test]
+        public async Task AddProfessor_EmptyFirstName()
+        {
+            await OpenAddProfessorModal();
+            await FillProfessorModal("", profLastName, profEmail, profPhone, profOffice);
+            await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
+
+            await Assertions.Expect(page.Locator(".modal-overlay")).ToBeVisibleAsync();
+
+            bool isInvalid = !await page.GetByPlaceholder(new Regex("First name"))
+                                        .EvaluateAsync<bool>("el => el.validity.valid");
+            Assert.That(isInvalid, Is.True);
+        }
+
+        //--- 9
+
+        [Test]
+        public async Task AddProfessor_EmptyLastName()
+        {
+            await OpenAddProfessorModal();
+            await FillProfessorModal(profFirstName, "", profEmail, profPhone, profOffice);
+            await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
+
+            await Assertions.Expect(page.Locator(".modal-overlay")).ToBeVisibleAsync();
+
+            bool isInvalid = !await page.GetByPlaceholder(new Regex("Last name"))
+                                        .EvaluateAsync<bool>("el => el.validity.valid");
+            Assert.That(isInvalid, Is.True);
+        }
+
+        //--- 10
+
+        [Test]
+        public async Task AddProfessor_EmptyEmail()
+        {
+            await OpenAddProfessorModal();
+            await FillProfessorModal(profFirstName, profLastName, "", profPhone, profOffice);
+            await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
+
+            await Assertions.Expect(page.Locator(".modal-overlay")).ToBeVisibleAsync();
+
+            bool isInvalid = !await page.GetByPlaceholder(new Regex(".*email@.*"))
+                                        .EvaluateAsync<bool>("el => el.validity.valid");
+
+            Assert.That(isInvalid, Is.True);
+        }
+
+        //--- 11
+
+        [Test]
+        public async Task AddProfessor_Cancel()
+        {
+            await OpenAddProfessorModal();
+            await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
+
+            await page!.Locator(".modal-overlay").Locator(".btn-cancel").ClickAsync();
+
+            await Assertions.Expect(page.Locator(".modal-overlay")).ToBeHiddenAsync();
+
+            await Assertions.Expect(
+                page.Locator(".course-card")
+                    .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" }))
+                .ToHaveCountAsync(0, new() { Timeout = 2000 });
+        }
+
+        //--- 12
+
+        [Test]
+        public async Task AddProfessor_CardShowsCorrectInfo()
+        {
+            try
+            {
+                await OpenAddProfessorModal();
+                await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
+                await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+
+                var card = page.Locator(".course-card")
+                               .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" });
+
+                await Assertions.Expect(card.Locator(".course-professor")).ToContainTextAsync(profEmail);
+                await Assertions.Expect(card.Locator(".course-semester")).ToContainTextAsync(profPhone);
+                await Assertions.Expect(card.Locator(".course-description")).ToContainTextAsync(profOffice);
+            }
+            finally
+            {
+                await DeleteProfessor(profFirstName, profLastName);
+            }
+        }
+
+        //--- 13
+
+        [Test]
+        public async Task EditProfessor_OpenModal()
+        {
+            try
+            {
+                await OpenAddProfessorModal();
+                await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
+                await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+
+                await page.Locator(".course-card")
+                          .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" })
+                          .ClickAsync();
+
+                await Assertions.Expect(page.Locator(".modal-title")).ToHaveTextAsync("Edit Professor Data");
+            }
+            finally
+            {
+                await DeleteProfessor(profFirstName, profLastName);
+            }
+        }
+
+        //--- 14
+
+        [Test]
+        public async Task EditProfessor_NameChanged()
+        {
+            string editedFirstName = "Jane";
+            string editedLastName = "Smith";
+            try
+            {
+                await OpenAddProfessorModal();
+                await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
+                await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+
+                await page.Locator(".course-card")
+                          .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" })
+                          .ClickAsync();
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible });
+
+                await page.GetByPlaceholder(new Regex("First name")).FillAsync(editedFirstName);
+                await page.GetByPlaceholder(new Regex("Last name")).FillAsync(editedLastName);
+                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Save changes.*") }).ClickAsync();
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+
+                await Assertions.Expect(
+                    page.Locator(".course-card")
+                        .Filter(new() { HasTextString = $"Prof. {editedFirstName} {editedLastName}" }))
+                    .ToBeVisibleAsync();
+            }
+            finally
+            {
+                await DeleteProfessor(editedFirstName, editedLastName);
+            }
+        }
+
+        //--- 15
+
+        [Test]
+        public async Task DeleteProfessor_Success()
+        {
+            await OpenAddProfessorModal();
+            await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
+            await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
+            await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+
+            await DeleteProfessor(profFirstName, profLastName);
+
+            await Assertions.Expect(
+                page.Locator(".course-card")
+                    .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" }))
+                .ToHaveCountAsync(0);
+        }
+
+        //--- 16
+
+        [Test]
+        public async Task DeleteProfessor_CancelConfirmation()
+        {
+            try
+            {
+                await OpenAddProfessorModal();
+                await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
+                await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+
+                var card = page.Locator(".course-card")
+                               .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" });
+
+                await card.HoverAsync();
+                await card.Locator(".course-action-btn").Nth(1).ClickAsync();
+
+                var confirmModal = page.Locator(".modal-overlay");
+                await confirmModal.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+                await confirmModal.Locator(".btn-cancel").ClickAsync();
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+
+                await Assertions.Expect(card).ToBeVisibleAsync();
+            }
+            finally
+            {
+                await DeleteProfessor(profFirstName, profLastName);
+            }
+        }
+
+        //--- 17
+
+        [Test]
+        public async Task AddMultipleProfessors_AllCardsVisible()
+        {
+            string secondFirstName = "Alice";
+            string secondLastName = "Brown";
+            string secondEmail = "alice.brown@example.com";
+
+            try
+            {
+                await OpenAddProfessorModal();
+                await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
+                await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+
+                await OpenAddProfessorModal();
+                await FillProfessorModal(secondFirstName, secondLastName, secondEmail, "0621234567", "202");
+                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+
+                await Assertions.Expect(page.Locator(".course-card")).ToHaveCountAsync(2, new() { Timeout = 10000 });
+
+                await Assertions.Expect(
+                    page.Locator(".course-card")
+                        .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" }))
+                    .ToBeVisibleAsync();
+                await Assertions.Expect(
+                    page.Locator(".course-card")
+                        .Filter(new() { HasTextString = $"Prof. {secondFirstName} {secondLastName}" }))
+                    .ToBeVisibleAsync();
+
+                await Assertions.Expect(
+                    page.Locator(".course-card")
+                        .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" }))
+                    .ToBeVisibleAsync();
+
+                await Assertions.Expect(
+                    page.Locator(".course-card")
+                        .Filter(new() { HasTextString = $"Prof. {secondFirstName} {secondLastName}" }))
+                    .ToBeVisibleAsync();
+            }
+            finally
+            {
+                await DeleteProfessor(profFirstName, profLastName);
+                await DeleteProfessor(secondFirstName, secondLastName);
+            }
         }
     }
 }
