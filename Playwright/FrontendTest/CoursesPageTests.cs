@@ -6,12 +6,20 @@ using System.Threading.Tasks;
 namespace FrontendTest
 {
     [TestFixture]
+    [NonParallelizable]
     public class CoursesPageTests
     {
         IBrowser? browser;
         IPlaywright? playwright;
         IPage? page;
         IBrowserContext? context;
+
+        //Test professor podaci
+        string profFirstName = "Profa";
+        string profLastName = "Profic";
+        string profMail = "profa@example.com";
+        string profPhone = "837489";
+        string profOffice = "1234";
 
         [SetUp]
         public async Task Setup()
@@ -20,7 +28,7 @@ namespace FrontendTest
             browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
                 Headless = false,
-                SlowMo = 100
+                SlowMo = 1000
             });
 
             context = await browser.NewContextAsync();
@@ -34,11 +42,32 @@ namespace FrontendTest
             await page.Locator(".login-pass").FillAsync("banana");
             await page.Locator(".toggle-password").ClickAsync();
             await page.Locator(".auth-button").ClickAsync();
+
+            // Potreban nam je jedan test profesor za kurseve koga cemo kreirati u setup a obrisati u teardown
+            await page.Locator(".main-nav-item-professors").ClickAsync();
+            await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add Professor.*") }).ClickAsync();
+            await page.GetByPlaceholder(new Regex("First name")).FillAsync(profFirstName);
+            await page.GetByPlaceholder(new Regex("Last name")).FillAsync(profLastName);
+            await page.GetByPlaceholder(new Regex(".*email@.*")).FillAsync(profMail);
+            await page.Locator("[name='phone']").FillAsync(profPhone);
+            await page.Locator("[name='office']").FillAsync(profOffice);
+
+            await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
         }
 
         [TearDown]
         public async Task Cleanup()
         {
+            var modal = page!.Locator(".modal-overlay");
+            if (await modal.IsVisibleAsync())
+                await page.Locator(".modal-close").ClickAsync();
+
+            await page.Locator(".main-nav-item-professors").ClickAsync();
+            var card = page.Locator(".course-card").Filter(new() { HasTextString = profFirstName});
+            await card.HoverAsync();
+            await card.Locator(".course-action-btn").Nth(1).ClickAsync(new LocatorClickOptions { Force = true });
+            await page.Locator(".btn-submit").ClickAsync();
+
             if (page != null) await page.CloseAsync();
             if (context != null) await context.CloseAsync();
             if (browser != null) await browser.CloseAsync();
@@ -47,7 +76,7 @@ namespace FrontendTest
 
         //--- 1
 
-        //[Ignore("")]
+        [Ignore("")]
         [Test]
         public async Task NavigateToCoursesPage()
         {
@@ -57,7 +86,7 @@ namespace FrontendTest
 
         //--- 2
 
-        //[Ignore("")]
+        [Ignore("")]
         [Test]
         public async Task AddCourse_OpenModal()
         {
@@ -84,6 +113,10 @@ namespace FrontendTest
         //Pomocna fja za brisanje test kurseva
         public async Task DeleteCourse(string title)
         {
+            var modal = page!.Locator(".modal-overlay");
+            if (await modal.IsVisibleAsync())
+                await page.Locator(".modal-close").ClickAsync();
+
             var card = page!.Locator(".course-card").Filter(new() { HasTextString = title });
             await card.HoverAsync();
             await card.Locator(".course-action-btn").Nth(1).WaitForAsync(new() { State = WaitForSelectorState.Visible });
@@ -93,7 +126,7 @@ namespace FrontendTest
 
         //--- 3
 
-        //[Ignore("")]
+        [Ignore("")]
         [Test]
         public async Task AddCourse_Success()
         {
@@ -123,7 +156,7 @@ namespace FrontendTest
 
         //--- 4
 
-        //[Ignore("")]
+        [Ignore("")]
         [Test]
         public async Task AddCourse_EmptyTitle() //Svako polje moze pojedinacno da se testira kad je prazno, ali da ne bi bili repetitivni testovi nisam ih stavio ovde
         {
@@ -144,7 +177,7 @@ namespace FrontendTest
 
         //--- 5
 
-        //[Ignore("")]
+        [Ignore("")]
         [Test]
         public async Task AddCourse_CancelBtn()
         {
@@ -166,7 +199,7 @@ namespace FrontendTest
 
         //--- 6
 
-        //[Ignore("")]
+        [Ignore("")]
         [Test]
         public async Task AddCourse_CloseModal()
         {
@@ -188,7 +221,7 @@ namespace FrontendTest
 
         //--- 7
 
-        //[Ignore("")]
+        [Ignore("")]
         [Test]
         public async Task EditCourse_TitleChanged()
         {
@@ -230,7 +263,7 @@ namespace FrontendTest
 
         //--- 8
 
-        //[Ignore("")]
+        [Ignore("")]
         [Test]
         public async Task EditCourse_Cancel()
         {
@@ -272,7 +305,7 @@ namespace FrontendTest
 
         //--- 9
 
-        //[Ignore("")]
+        [Ignore("")]
         [Test]
         public async Task DeleteCourse_Success()
         {
@@ -296,7 +329,7 @@ namespace FrontendTest
 
         //--- 10
 
-        //[Ignore("")]
+        [Ignore("")]
         [Test]
         public async Task DeleteCourse_Cancel()
         {
@@ -331,7 +364,7 @@ namespace FrontendTest
 
         //--- 11
 
-        //[Ignore("")]
+        [Ignore("")]
         [Test]
         public async Task PassCourse_OpenModal_DisplayRightTitle()
         {
@@ -358,6 +391,7 @@ namespace FrontendTest
                 await Assertions.Expect(modal).ToHaveTextAsync(new Regex($".*{title}.*"));
 
                 await modal.Locator(".modal-close").ClickAsync();
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
             }
             finally
             {
@@ -367,7 +401,7 @@ namespace FrontendTest
 
         //--- 12
 
-        //[Ignore("")]
+        [Ignore("")]
         [Test]
         public async Task PassCourse_Cancel()
         {
@@ -395,7 +429,7 @@ namespace FrontendTest
                 await modal.Locator(".form-input").FillAsync(grade.ToString());
 
                 await modal.Locator(".btn-cancel").ClickAsync();
-
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
                 await Assertions.Expect(card.Locator(".btn-pass")).ToBeVisibleAsync() ;
             }
             finally
@@ -406,7 +440,7 @@ namespace FrontendTest
 
         //--- 13
 
-        //[Ignore("")]
+        [Ignore("")]
         [Test]
         public async Task PassCourse_Success()
         {
@@ -433,7 +467,7 @@ namespace FrontendTest
                 await modal.Locator(".form-input").FillAsync(grade.ToString());
 
                 await modal.Locator(".btn-submit").ClickAsync();
-
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
                 await Task.Delay(500); //Cekamo da se ucita ponovo kurs
 
                 await Assertions.Expect(card).ToHaveTextAsync(new Regex($".*Grade: {grade}.*"));
@@ -450,8 +484,8 @@ namespace FrontendTest
         [Test]
         public async Task Sort_BySemester_Descending()
         {
-            string title1 = "Test sorting course 1";
-            string title2 = "Test sorting course 2";
+            string title1 = "B - Test sorting course 1";
+            string title2 = "A - Test sorting course 2";
             int semester1 = 1;
             int semester2 = 2;
             int index = 1;
@@ -470,27 +504,25 @@ namespace FrontendTest
                 await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add Course.*") }).ClickAsync();
                 await FillCourseModal(title2, semester2, index, desc2);
                 await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create course.*") }).ClickAsync();
-                await Task.Delay(1000);
+
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+
+                var allCards = page.Locator(".course-card");
+                await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
                 await page.Locator(".sort-row .form-select").Nth(0).SelectOptionAsync(new SelectOptionValue { Label = "Semester" });
-                await page.Locator(".sort-row .form-select").Nth(1).SelectOptionAsync(new SelectOptionValue { Label = "Descending" });
+                allCards = page.Locator(".course-card");
+                await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+                await page.Locator(".sort-row .form-select").Nth(1).SelectOptionAsync(new SelectOptionValue { Label = "Ascending" });
 
-                await Task.Delay(1000);
+                allCards = page.Locator(".course-card");
+                await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
-                var allCards = page!.Locator(".course-card");
-                int count = await allCards.CountAsync();
+                var firstTitle = await allCards.Nth(0).Locator(".course-title").InnerTextAsync();
+                var secondTitle = await allCards.Nth(1).Locator(".course-title").InnerTextAsync();
 
-                int index1 = -1, index2 = -1;
-
-                for (int i = 0; i < count; i++)
-                {
-                    var cardTitle = await allCards.Nth(i).Locator(".course-title").InnerTextAsync();
-                    if (cardTitle == title1) index1 = i;
-                    if (cardTitle == title2) index2 = i;
-                }
-
-                // Proveravamo da li je title1 (semester 1) posle title2 (semester 2) u listi
-                Assert.That(index1, Is.GreaterThan(index2), $"Ocekivano da '{title2}' bude pre '{title1}' nakon sortiranja po semestru descending");
+                Assert.That(firstTitle.Trim(), Is.EqualTo(title2), $"Ocekivano da '{title2}' bude prvi nakon sortiranja descending");
+                Assert.That(secondTitle.Trim(), Is.EqualTo(title1), $"Ocekivano da '{title1}' bude drugi nakon sortiranja descending");
             }
             finally
             {
@@ -505,8 +537,8 @@ namespace FrontendTest
         [Test]
         public async Task Sort_BySemester_Ascending()
         {
-            string title1 = "Test sorting course 1";
-            string title2 = "Test sorting course 2";
+            string title1 = "B - Test sorting course 1";
+            string title2 = "A - Test sorting course 2";
             int semester1 = 1;
             int semester2 = 2;
             int index = 1;
@@ -525,34 +557,31 @@ namespace FrontendTest
                 await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add Course.*") }).ClickAsync();
                 await FillCourseModal(title2, semester2, index, desc2);
                 await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create course.*") }).ClickAsync();
-                await Task.Delay(1000);
+
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden});
+
+                var allCards = page.Locator(".course-card");
+                await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
                 await page.Locator(".sort-row .form-select").Nth(0).SelectOptionAsync(new SelectOptionValue { Label = "Semester" });
+                allCards = page.Locator(".course-card");
+                await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
                 await page.Locator(".sort-row .form-select").Nth(1).SelectOptionAsync(new SelectOptionValue { Label = "Ascending" });
+                
+                allCards = page.Locator(".course-card");
+                await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
-                await Task.Delay(1000);
+                var firstTitle = await allCards.Nth(0).Locator(".course-title").InnerTextAsync();
+                var secondTitle = await allCards.Nth(1).Locator(".course-title").InnerTextAsync();
 
-                var allCards = page!.Locator(".course-card");
-                int count = await allCards.CountAsync();
-
-                int index1 = -1, index2 = -1;
-
-                for (int i = 0; i < count; i++)
-                {
-                    var cardTitle = await allCards.Nth(i).Locator(".course-title").InnerTextAsync();
-                    if (cardTitle == title1) index1 = i;
-                    if (cardTitle == title2) index2 = i;
-                }
-
-                // Proveravamo da li je title1 (semester 1) pre title2 (semester 2) u listi
-                Assert.That(index1, Is.LessThan(index2), $"Ocekivano da '{title1}' bude pre '{title2}' nakon sortiranja po semestru ascending");
+                Assert.That(firstTitle.Trim(), Is.EqualTo(title1), $"Ocekivano da '{title1}' bude prvi nakon sortiranja ascending");
+                Assert.That(secondTitle.Trim(), Is.EqualTo(title2), $"Ocekivano da '{title2}' bude drugi nakon sortiranja ascending");
             }
             finally
-            {
+            { 
                 await DeleteCourse(title1);
                 await DeleteCourse(title2);
             }
         }
-
     }
 }
