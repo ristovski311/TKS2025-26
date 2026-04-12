@@ -513,7 +513,7 @@ namespace FrontendTest
                 await page.Locator(".sort-row .form-select").Nth(0).SelectOptionAsync(new SelectOptionValue { Label = "Semester" });
                 allCards = page.Locator(".course-card");
                 await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
-                await page.Locator(".sort-row .form-select").Nth(1).SelectOptionAsync(new SelectOptionValue { Label = "Ascending" });
+                await page.Locator(".sort-row .form-select").Nth(1).SelectOptionAsync(new SelectOptionValue { Label = "Descending" });
 
                 allCards = page.Locator(".course-card");
                 await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
