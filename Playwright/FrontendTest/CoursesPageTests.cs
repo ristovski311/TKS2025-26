@@ -28,7 +28,7 @@ namespace FrontendTest
             browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
                 Headless = false,
-                SlowMo = 1000
+                SlowMo = 1500
             });
 
             context = await browser.NewContextAsync();
@@ -59,6 +59,8 @@ namespace FrontendTest
 
             await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex("Register") }).ClickAsync();
 
+            await Assertions.Expect(page.Locator(".auth-title")).ToHaveTextAsync(new Regex(".*Login.*"));
+
             // Login uvek pre testova
             await page.Locator(".login-email").FillAsync(userMail);
             await page.Locator(".login-pass").FillAsync(userPass);
@@ -84,11 +86,11 @@ namespace FrontendTest
             if (await modal.IsVisibleAsync())
                 await page.Locator(".modal-close").ClickAsync();
 
-            await page.Locator(".main-nav-item-professors").ClickAsync();
-            var card = page.Locator(".course-card").Filter(new() { HasTextString = profFirstName});
-            await card.HoverAsync();
-            await card.Locator(".course-action-btn").Nth(1).ClickAsync(new LocatorClickOptions { Force = true });
-            await page.Locator(".btn-submit").ClickAsync();
+            //await page.Locator(".main-nav-item-professors").ClickAsync();
+            //var card = page.Locator(".course-card").Filter(new() { HasTextString = profFirstName});
+            //await card.HoverAsync();
+            //await card.Locator(".course-action-btn").Nth(1).ClickAsync(new LocatorClickOptions { Force = true });
+            //await page.Locator(".btn-submit").ClickAsync();
 
             await page.Locator(".delete-button").ClickAsync();
             await page.Locator(".modal-overlay .btn-submit").ClickAsync();

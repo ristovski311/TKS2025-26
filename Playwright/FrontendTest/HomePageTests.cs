@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 namespace FrontendTest
 {
     [TestFixture]
+    [NonParallelizable]
     public class HomePageTests
     {
         IBrowser? browser;
@@ -28,7 +29,7 @@ namespace FrontendTest
             browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
                 Headless = false,
-                SlowMo = 100
+                SlowMo = 1500
             });
 
             context = await browser.NewContextAsync();

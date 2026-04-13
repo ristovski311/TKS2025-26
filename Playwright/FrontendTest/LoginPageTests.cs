@@ -28,7 +28,7 @@ namespace FrontendTest
             browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
                 Headless = false,
-                SlowMo = 100
+                SlowMo = 1500
             });
 
             context = await browser.NewContextAsync();
@@ -57,11 +57,16 @@ namespace FrontendTest
             await page.GetByPlaceholder("Phone").FillAsync(userPhone);
 
             await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex("Register") }).ClickAsync();
+
+            await Assertions.Expect(page.Locator(".auth-title")).ToHaveTextAsync(new Regex(".*Login.*"));
         }
 
         [TearDown]
         public async Task Cleanup()
         {
+            await page.Locator(".delete-button").ClickAsync();
+            await page.Locator(".modal-overlay .btn-submit").ClickAsync();
+
             if (page != null) await page.CloseAsync();
             if (context != null) await context.CloseAsync();
             if (browser != null) await browser.CloseAsync();
@@ -72,21 +77,12 @@ namespace FrontendTest
 
         public async Task SuccessfulLogin()
         {
-            try
-            {
-                await page.Locator(".login-email").FillAsync(userMail);
-                await page.Locator(".login-pass").FillAsync(userPass);
-                await page.Locator(".toggle-password").ClickAsync();
-                await page.Locator(".auth-button").ClickAsync();
+            await page.Locator(".login-email").FillAsync(userMail);
+            await page.Locator(".login-pass").FillAsync(userPass);
+            await page.Locator(".toggle-password").ClickAsync();
+            await page.Locator(".auth-button").ClickAsync();
 
-                await Assertions.Expect(page).ToHaveTitleAsync(new Regex(".*NoteIT!.*"));
-
-            }
-            finally
-            {
-                await page.Locator(".delete-button").ClickAsync();
-                await page.Locator(".modal-overlay .btn-submit").ClickAsync();
-            }
+            await Assertions.Expect(page).ToHaveTitleAsync(new Regex(".*NoteIT!.*"));
         }
 
         //---
@@ -94,12 +90,23 @@ namespace FrontendTest
         [Test]
         public async Task UnsuccessfulLogin_WrongCredentials()
         {
-            await page.Locator(".login-email").FillAsync("random@example.com");
-            await page.Locator(".login-pass").FillAsync("test123.");
-            await page.Locator(".toggle-password").ClickAsync();
-            await page.Locator(".auth-button").ClickAsync();
+            try
+            {
+                await page.Locator(".login-email").FillAsync("random@example.com");
+                await page.Locator(".login-pass").FillAsync("test123.");
+                await page.Locator(".toggle-password").ClickAsync();
+                await page.Locator(".auth-button").ClickAsync();
 
-            await Assertions.Expect(page.Locator(".auth-error")).ToBeVisibleAsync();
+                await Assertions.Expect(page.Locator(".auth-error")).ToBeVisibleAsync();
+
+            }
+            finally
+            {
+                await page.Locator(".login-email").FillAsync(userMail);
+                await page.Locator(".login-pass").FillAsync(userPass);
+                await page.Locator(".toggle-password").ClickAsync();
+                await page.Locator(".auth-button").ClickAsync();
+            }
         }
 
         //---
@@ -107,11 +114,21 @@ namespace FrontendTest
         [Test]
         public async Task UnsuccessfulLogin_NoEmail()
         {
-            await page.Locator(".login-pass").FillAsync(userPass);
-            await page.Locator(".toggle-password").ClickAsync();
-            await page.Locator(".auth-button").ClickAsync();
+            try
+            {
+                await page.Locator(".login-pass").FillAsync(userPass);
+                await page.Locator(".toggle-password").ClickAsync();
+                await page.Locator(".auth-button").ClickAsync();
 
-            await Assertions.Expect(page.Locator(".auth-error")).ToHaveTextAsync(new Regex("Neuspesan login"));
+                await Assertions.Expect(page.Locator(".auth-error")).ToHaveTextAsync(new Regex("Neuspesan login"));
+            }
+            finally
+            {
+                await page.Locator(".login-email").FillAsync(userMail);
+                await page.Locator(".login-pass").FillAsync(userPass);
+                await page.Locator(".toggle-password").ClickAsync();
+                await page.Locator(".auth-button").ClickAsync();
+            }
         }
 
         //---
@@ -119,10 +136,21 @@ namespace FrontendTest
         [Test]
         public async Task UnsuccessfulLogin_NoPassword()
         {
-            await page.Locator(".login-email").FillAsync(userMail);
-            await page.Locator(".auth-button").ClickAsync();
+            try
+            {
+                await page.Locator(".login-email").FillAsync(userMail);
+                await page.Locator(".auth-button").ClickAsync();
 
-            await Assertions.Expect(page.Locator(".auth-error")).ToHaveTextAsync(new Regex("Neuspesan login"));
+                await Assertions.Expect(page.Locator(".auth-error")).ToHaveTextAsync(new Regex("Neuspesan login"));
+
+            }
+            finally
+            {
+                await page.Locator(".login-email").FillAsync(userMail);
+                await page.Locator(".login-pass").FillAsync(userPass);
+                await page.Locator(".toggle-password").ClickAsync();
+                await page.Locator(".auth-button").ClickAsync();
+            }
         }
 
         //---
@@ -130,19 +158,41 @@ namespace FrontendTest
         [Test]
         public async Task UnsuccessfulLogin_NoCredentials()
         {
-            await page.Locator(".auth-button").ClickAsync(new() { Force = true });
-
-            await Assertions.Expect(page.Locator(".auth-error")).ToHaveTextAsync(new Regex(".*Neuspesan login.*"));
+            try
+            {
+                await page.Locator(".auth-button").ClickAsync(new() { Force = true });
+                await Task.Delay(500);
+                await Assertions.Expect(page.Locator(".auth-error")).ToHaveTextAsync(new Regex(".*Neuspesan login.*"));
+            }
+            finally
+            {
+                await page.Locator(".login-email").FillAsync(userMail);
+                await page.Locator(".login-pass").FillAsync(userPass);
+                await page.Locator(".toggle-password").ClickAsync();
+                await page.Locator(".auth-button").ClickAsync();
+            }
         }
 
         //---
 
         [Test]
         public async Task LoadRegisterPage()
-        {
-            await page.Locator(".auth-link").ClickAsync();
-
-            await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() {NameString = "Register" })).ToBeVisibleAsync();
+        {   
+            try
+            {
+                await page.Locator(".auth-link").ClickAsync();
+                await Task.Delay(500);
+                await Assertions.Expect(page.Locator(".auth-title")).ToHaveTextAsync(new Regex(".*Register.*"));
+            }
+            finally
+            {
+                await page.Locator(".auth-link").ClickAsync();
+                await Task.Delay(500);
+                await page.Locator(".login-email").FillAsync(userMail);
+                await page.Locator(".login-pass").FillAsync(userPass);
+                await page.Locator(".toggle-password").ClickAsync();
+                await page.Locator(".auth-button").ClickAsync();
+            }
         }
     }
 }
