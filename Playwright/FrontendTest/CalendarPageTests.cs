@@ -317,6 +317,10 @@ namespace FrontendTest
             await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create task.*") }).ClickAsync();
 
             await Assertions.Expect(page.Locator(".modal-overlay")).ToBeVisibleAsync();
+
+            bool isInvalid = !await page.Locator("[name='title']")
+                                        .EvaluateAsync<bool>("el => el.validity.valid");
+            Assert.That(isInvalid, Is.True);
         }
 
         //--- 13

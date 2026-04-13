@@ -241,6 +241,10 @@ function createNoteCard(note) {
 }
 
 async function openNoteFormModal(isFolderMode = false, noteToEdit = null) {
+    if (!allCourses.length) {
+        await loadData();
+    }
+
     const overlay = createElement("div", "modal-overlay");
     const modalContent = createElement("div", "modal-content");
     
