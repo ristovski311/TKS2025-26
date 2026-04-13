@@ -35,7 +35,7 @@ namespace FrontendTest
             browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
                 Headless = false,
-                SlowMo = 500
+                SlowMo = 100
             });
 
             context = await browser.NewContextAsync();
@@ -95,6 +95,7 @@ namespace FrontendTest
             await page.Locator(".form-textarea").FillAsync(courseDescription);
 
             await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create course.*") }).ClickAsync();
+            await Assertions.Expect(page.Locator(".loading-overlay")).ToBeHiddenAsync();
         }
 
         [TearDown]
@@ -104,15 +105,16 @@ namespace FrontendTest
             if (await modal.IsVisibleAsync())
                 await page.Locator(".modal-close").ClickAsync();
 
-            //Dovoljno je obrisati samo profesora, i time ce svaki kurs kaskadno da se obrise
-            await page.Locator(".main-nav-item-professors").ClickAsync();
-            var card = page.Locator(".course-card").Filter(new() { HasTextString = profFirstName });
-            await card.HoverAsync();
-            await card.Locator(".course-action-btn").Nth(1).ClickAsync(new LocatorClickOptions { Force = true });
-            await page.Locator(".btn-submit").ClickAsync();
+            ////Dovoljno je obrisati samo profesora, i time ce svaki kurs kaskadno da se obrise
+            //await page.Locator(".main-nav-item-professors").ClickAsync();
+            //var card = page.Locator(".course-card").Filter(new() { HasTextString = profFirstName });
+            //await card.HoverAsync();
+            //await card.Locator(".course-action-btn").Nth(1).ClickAsync(new LocatorClickOptions { Force = true });
+            //await page.Locator(".btn-submit").ClickAsync();
 
             await page.Locator(".delete-button").ClickAsync();
             await page.Locator(".modal-overlay .btn-submit").ClickAsync();
+            await Task.Delay(1000);
 
             if (page != null) await page.CloseAsync();
             if (context != null) await context.CloseAsync();
@@ -150,6 +152,8 @@ namespace FrontendTest
             await page.Locator("[name='title']").FillAsync(title);
             await page.Locator("[name='description']").FillAsync(desc);
             await page.Locator("[name='content']").FillAsync(content);
+
+            await Task.Delay(2000);
 
             await page!.WaitForSelectorAsync("select[name='courseId'] option:nth-child(2)",
                                              new PageWaitForSelectorOptions { State = WaitForSelectorState.Attached }); //Sacekamo da se ucitaju kursevi

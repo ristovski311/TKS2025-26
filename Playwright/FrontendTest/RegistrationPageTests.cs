@@ -70,6 +70,7 @@ namespace FrontendTest
                     await deleteBtn.ClickAsync();
                     await page.Locator(".btn-submit").ClickAsync();
                     await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+                    await Task.Delay(1000);
                 }
                 catch (TimeoutException)
                 {

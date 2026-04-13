@@ -28,7 +28,7 @@ namespace FrontendTest
             browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
                 Headless = false,
-                SlowMo = 1500
+                SlowMo = 100
             });
 
             context = await browser.NewContextAsync();
@@ -77,6 +77,7 @@ namespace FrontendTest
             await page.Locator("[name='office']").FillAsync(profOffice);
 
             await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
+            await Assertions.Expect(page.Locator(".loading-overlay")).ToBeHiddenAsync();
         }
 
         [TearDown]
@@ -94,6 +95,7 @@ namespace FrontendTest
 
             await page.Locator(".delete-button").ClickAsync();
             await page.Locator(".modal-overlay .btn-submit").ClickAsync();
+            await Task.Delay(1000);
 
             if (page != null) await page.CloseAsync();
             if (context != null) await context.CloseAsync();
@@ -542,6 +544,8 @@ namespace FrontendTest
                 allCards = page.Locator(".course-card");
                 await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
+                await Task.Delay(2000);
+
                 var firstTitle = await allCards.Nth(0).Locator(".course-title").InnerTextAsync();
                 var secondTitle = await allCards.Nth(1).Locator(".course-title").InnerTextAsync();
 
@@ -594,6 +598,8 @@ namespace FrontendTest
                 
                 allCards = page.Locator(".course-card");
                 await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+
+                await Task.Delay(2000);
 
                 var firstTitle = await allCards.Nth(0).Locator(".course-title").InnerTextAsync();
                 var secondTitle = await allCards.Nth(1).Locator(".course-title").InnerTextAsync();

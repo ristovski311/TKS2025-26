@@ -29,7 +29,7 @@ namespace FrontendTest
             browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
                 Headless = false,
-                SlowMo = 1500
+                SlowMo = 100
             });
 
             context = await browser.NewContextAsync();
@@ -71,6 +71,7 @@ namespace FrontendTest
         {
             await page.Locator(".delete-button").ClickAsync();
             await page.Locator(".modal-overlay .btn-submit").ClickAsync();
+            await Task.Delay(1000);
 
             if (page != null) await page.CloseAsync();
             if (context != null) await context.CloseAsync();
