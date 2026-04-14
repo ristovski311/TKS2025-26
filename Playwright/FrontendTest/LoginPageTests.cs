@@ -48,7 +48,7 @@ namespace FrontendTest
             userPhone = "1234";
 
             //Registracija test korisnika
-            await page.GetByText(new Regex("Register here")).ClickAsync();
+            await page.Locator(".auth-link").ClickAsync();
             await page.GetByPlaceholder("Username").FillAsync(username);
             await page.GetByPlaceholder("First name").FillAsync(userFirstname);
             await page.GetByPlaceholder("Last name").FillAsync(userLastname);
@@ -67,7 +67,7 @@ namespace FrontendTest
         {
             await page.Locator(".delete-button").ClickAsync();
             await page.Locator(".modal-overlay .btn-submit").ClickAsync();
-            await Task.Delay(1000);
+            await Assertions.Expect(page.Locator(".loading-overlay")).ToBeHiddenAsync();
 
             if (page != null) await page.CloseAsync();
             if (context != null) await context.CloseAsync();
