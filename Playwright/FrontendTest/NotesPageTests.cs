@@ -35,7 +35,7 @@ namespace FrontendTest
             browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
                 Headless = false,
-                SlowMo = 100
+                SlowMo = 30
             });
 
             context = await browser.NewContextAsync();
@@ -105,13 +105,6 @@ namespace FrontendTest
             if (await modal.IsVisibleAsync())
                 await page.Locator(".modal-close").ClickAsync();
 
-            ////Dovoljno je obrisati samo profesora, i time ce svaki kurs kaskadno da se obrise
-            //await page.Locator(".main-nav-item-professors").ClickAsync();
-            //var card = page.Locator(".course-card").Filter(new() { HasTextString = profFirstName });
-            //await card.HoverAsync();
-            //await card.Locator(".course-action-btn").Nth(1).ClickAsync(new LocatorClickOptions { Force = true });
-            //await page.Locator(".btn-submit").ClickAsync();
-
             await page.Locator(".delete-button").ClickAsync();
             await page.Locator(".modal-overlay .btn-submit").ClickAsync();
             await Task.Delay(1000);
@@ -163,6 +156,7 @@ namespace FrontendTest
         //Pomocna fja za brisanje note-a
         public async Task DeleteNote(string title)
         {
+            await Assertions.Expect(page.Locator("#loading-overlay")).ToBeHiddenAsync();
             var modal = page!.Locator(".modal-overlay");
             if (await modal.IsVisibleAsync())
                 await page.Locator(".modal-close").ClickAsync();
@@ -425,6 +419,7 @@ namespace FrontendTest
 
         public async Task DeleteFolder(string title)
         {
+            await Assertions.Expect(page.Locator("#loading-overlay")).ToBeHiddenAsync();
             var modal = page!.Locator(".modal-overlay");
             if (await modal.IsVisibleAsync())
                 await page.Locator(".modal-close").ClickAsync();

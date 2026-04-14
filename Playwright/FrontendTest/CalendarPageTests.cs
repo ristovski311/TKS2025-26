@@ -50,7 +50,7 @@ namespace FrontendTest
             browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
                 Headless = false,
-                SlowMo = 100
+                SlowMo = 50
             });
 
             context = await browser.NewContextAsync();
@@ -373,6 +373,8 @@ namespace FrontendTest
             string editedTitle = "Edited Task Title";
             try
             {
+                await Assertions.Expect(page.Locator("#loading-overlay")).ToBeHiddenAsync();
+
                 await OpenAddTaskModal();
                 await FillTaskModal(taskTitle, taskType, taskDescription, taskDate, taskGrade);
                 await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create task.*") }).ClickAsync();

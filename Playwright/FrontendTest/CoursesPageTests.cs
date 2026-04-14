@@ -28,7 +28,7 @@ namespace FrontendTest
             browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
                 Headless = false,
-                SlowMo = 100
+                SlowMo = 50
             });
 
             context = await browser.NewContextAsync();
@@ -143,11 +143,13 @@ namespace FrontendTest
             if (await modal.IsVisibleAsync())
                 await page.Locator(".modal-close").ClickAsync();
 
-            var card = page!.Locator(".course-card").Filter(new() { HasTextString = title });
+            var card = page!.Locator(".course-card:not(.skeleton-card)").Filter(new() { HasTextString = title });
             await card.HoverAsync();
             await card.Locator(".course-action-btn").Nth(1).WaitForAsync(new() { State = WaitForSelectorState.Visible });
             await card.Locator(".course-action-btn").Nth(1).ClickAsync(); //X dugme je drugo po redu zato nth(1)
             await page.Locator(".btn-submit").ClickAsync();
+
+            await card.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
         }
 
         //--- 3
@@ -265,7 +267,7 @@ namespace FrontendTest
                 await FillCourseModal(title, semester, index, desc);
                 await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create course.*") }).ClickAsync();
 
-                await Task.Delay(500);
+                await page.Locator(".course-card:not(.skeleton-card)").WaitForAsync(new() { State = WaitForSelectorState.Visible});
 
                 var card = page.Locator(".course-card").Filter(new() { HasTextString = title });
                 
@@ -276,7 +278,8 @@ namespace FrontendTest
                 await FillCourseModal(title_edited, semester, index, desc);
 
                 await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Save changes.*") }).ClickAsync();
-                await Task.Delay(500);
+
+                await page.Locator(".course-card:not(.skeleton-card)").WaitForAsync(new() { State = WaitForSelectorState.Visible});
 
                 card = page.Locator(".course-card").Filter(new() { HasTextString = title_edited });
                 await Assertions.Expect(card).ToBeVisibleAsync();
@@ -345,7 +348,7 @@ namespace FrontendTest
             await FillCourseModal(title, semester, index, desc);
             await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create course.*") }).ClickAsync();
 
-            await Task.Delay(500);//Sacekamo da se kreira kurs
+            await page.Locator(".course-card").Filter(new() { HasTextString = title }).WaitForAsync(new() { State = WaitForSelectorState.Visible});
 
             await DeleteCourse(title); //Brisemo kurs
 
@@ -533,15 +536,15 @@ namespace FrontendTest
 
                 await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
 
-                var allCards = page.Locator(".course-card");
+                var allCards = page.Locator(".course-card:not(.skeleton-card)");
                 await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
                 await page.Locator(".sort-row .form-select").Nth(0).SelectOptionAsync(new SelectOptionValue { Label = "Semester" });
-                allCards = page.Locator(".course-card");
+                allCards = page.Locator(".course-card:not(.skeleton-card)");
                 await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
                 await page.Locator(".sort-row .form-select").Nth(1).SelectOptionAsync(new SelectOptionValue { Label = "Descending" });
 
-                allCards = page.Locator(".course-card");
+                allCards = page.Locator(".course-card:not(.skeleton-card)");
                 await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
                 await Task.Delay(2000);
@@ -586,17 +589,17 @@ namespace FrontendTest
                 await FillCourseModal(title2, semester2, index, desc2);
                 await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create course.*") }).ClickAsync();
 
-                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden});
+                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
 
-                var allCards = page.Locator(".course-card");
+                var allCards = page.Locator(".course-card:not(.skeleton-card)");
                 await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
                 await page.Locator(".sort-row .form-select").Nth(0).SelectOptionAsync(new SelectOptionValue { Label = "Semester" });
-                allCards = page.Locator(".course-card");
+                allCards = page.Locator(".course-card:not(.skeleton-card)");
                 await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
                 await page.Locator(".sort-row .form-select").Nth(1).SelectOptionAsync(new SelectOptionValue { Label = "Ascending" });
-                
-                allCards = page.Locator(".course-card");
+
+                allCards = page.Locator(".course-card:not(.skeleton-card)");
                 await allCards.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
                 await Task.Delay(2000);
