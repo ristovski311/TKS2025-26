@@ -68,6 +68,7 @@ namespace FrontendTest
             await page.Locator(".delete-button").ClickAsync();
             await page.Locator(".modal-overlay .btn-submit").ClickAsync();
             //await Assertions.Expect(page.Locator(".loading-overlay")).ToBeHiddenAsync(new() { Timeout = 10000 });
+            await page.Locator(".auth-title").WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
             if (page != null) await page.CloseAsync();
             if (context != null) await context.CloseAsync();
