@@ -50,7 +50,7 @@ namespace FrontendTest
             browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
                 Headless = false,
-                SlowMo = 50
+                SlowMo = 200
             });
 
             context = await browser.NewContextAsync();
@@ -116,7 +116,8 @@ namespace FrontendTest
                 await deleteBtn.ClickAsync();
                 await page.Locator(".btn-submit").ClickAsync();
                 await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
-                await Task.Delay(1000);
+                await Assertions.Expect(page.Locator(".loading-overlay")).ToBeHiddenAsync(new() { Timeout = 10000 });
+
             }
             catch (TimeoutException)
             {

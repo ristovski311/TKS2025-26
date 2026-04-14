@@ -189,7 +189,7 @@ async function handleDeleteAccount() {
             }
         },
         null,
-        "⚠️ This action is permanent and cannot be undone."
+        "This action is permanent and cannot be undone."
     )
 }
 
