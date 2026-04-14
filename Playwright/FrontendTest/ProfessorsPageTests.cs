@@ -29,6 +29,9 @@ namespace FrontendTest
         string profPhone = "0611234567";
         string profOffice = "101";
 
+        static readonly LocatorWaitForOptions WaitVisible = new() { State = WaitForSelectorState.Visible, Timeout = 10_000 };
+        static readonly LocatorWaitForOptions WaitHidden = new() { State = WaitForSelectorState.Hidden, Timeout = 10_000 };
+
         [SetUp]
         public async Task Setup()
         {
@@ -59,14 +62,16 @@ namespace FrontendTest
             await page.Locator(".auth-button").ClickAsync();
 
             await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { NameString = "Login" }))
-                            .ToBeVisibleAsync(new() { Timeout = 15000 });
+                            .ToBeVisibleAsync(new() { Timeout = 15_000 });
+
             await page.Locator(".login-email").FillAsync(testEmail);
             await page.Locator(".login-pass").FillAsync(testPassword);
             await page.Locator(".auth-button").ClickAsync();
-            await Assertions.Expect(page).ToHaveTitleAsync(new Regex(".*NoteIT!.*"));
+            await Assertions.Expect(page).ToHaveTitleAsync(new Regex(".*NoteIT!.*"), new() { Timeout = 15_000 });
 
             await page.Locator(".main-nav-item-professors").ClickAsync();
-            await Assertions.Expect(page.Locator(".page-title")).ToHaveTextAsync("My Professors");
+            await Assertions.Expect(page.Locator(".page-title")).ToHaveTextAsync("My Professors", new() { Timeout = 10_000 });
+            await page.Locator(".courses-grid").WaitForAsync(WaitVisible);
         }
 
         [TearDown]
@@ -74,16 +79,18 @@ namespace FrontendTest
         {
             await page!.GotoAsync("http://127.0.0.1:5500/index.html");
 
+            await page.Locator(".main-nav-item-professors").WaitForAsync(WaitVisible);
+
             var deleteBtn = page.Locator(".delete-button");
             try
             {
-                await deleteBtn.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 5000 });
+                await deleteBtn.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 5_000 });
                 await deleteBtn.ClickAsync();
+                await page.Locator(".modal-overlay").WaitForAsync(WaitVisible);
                 await page.Locator(".btn-submit").ClickAsync();
-                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
-                await Task.Delay(1000);
+                await page.Locator(".modal-overlay").WaitForAsync(WaitHidden);
             }
-            catch (TimeoutException) { }
+            catch (TimeoutException) {  }
 
             if (page != null) await page.CloseAsync();
             if (context != null) await context.CloseAsync();
@@ -94,7 +101,10 @@ namespace FrontendTest
         public async Task FillProfessorModal(string firstName, string lastName,
                                               string email, string phone, string office)
         {
-            await page!.GetByPlaceholder(new Regex("First name")).FillAsync(firstName);
+            var firstNameInput = page!.GetByPlaceholder(new Regex("First name"));
+            await Assertions.Expect(firstNameInput).ToBeEditableAsync(new() { Timeout = 5_000 });
+
+            await firstNameInput.FillAsync(firstName);
             await page.GetByPlaceholder(new Regex("Last name")).FillAsync(lastName);
             await page.GetByPlaceholder(new Regex(".*email@.*")).FillAsync(email);
             await page.Locator("[name='phone']").FillAsync(phone);
@@ -104,38 +114,52 @@ namespace FrontendTest
         public async Task OpenAddProfessorModal()
         {
             await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add Professor.*") }).ClickAsync();
-            await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible });
+            await page.Locator(".modal-overlay").WaitForAsync(WaitVisible);
         }
-
         public async Task DeleteProfessor(string firstName, string lastName)
         {
-            await page!.Locator(".courses-grid").WaitForAsync(new() { State = WaitForSelectorState.Visible });
+            await page!.Locator(".courses-grid").WaitForAsync(WaitVisible);
 
-            int modalCount = await page.Locator(".modal-overlay").CountAsync();
-            for (int i = 0; i < modalCount; i++)
+            while (await page.Locator(".modal-overlay").CountAsync() > 0)
             {
+                var overlay = page.Locator(".modal-overlay").Last;
+                var closeBtn = overlay.Locator(".modal-close");
+
+                bool closeVisible = false;
                 try
                 {
-                    await page.Locator(".modal-overlay").Last
-                              .Locator(".modal-close")
-                              .ClickAsync(new() { Timeout = 2000 });
-                    await page.Locator(".modal-overlay").Last
-                              .WaitForAsync(new() { State = WaitForSelectorState.Hidden, Timeout = 2000 });
+                    await closeBtn.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 2_000 });
+                    closeVisible = true;
                 }
-                catch (TimeoutException) { break; }
+                catch (TimeoutException) { }
+
+                if (closeVisible)
+                {
+                    await closeBtn.ClickAsync();
+                    await overlay.WaitForAsync(new() { State = WaitForSelectorState.Hidden, Timeout = 5_000 });
+                }
+                else
+                {
+                    break;
+                }
             }
 
             string fullName = $"Prof. {firstName} {lastName}";
             var card = page.Locator(".course-card").Filter(new() { HasTextString = fullName });
 
+            await card.WaitForAsync(WaitVisible);
             await card.HoverAsync();
 
-            await card.Locator(".course-action-btn").Nth(1).ClickAsync();
+            var deleteActionBtn = card.Locator(".course-action-btn").Nth(1);
+            await deleteActionBtn.WaitForAsync(WaitVisible);
+            await deleteActionBtn.ClickAsync();
 
             var confirmModal = page.Locator(".modal-overlay");
-            await confirmModal.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+            await confirmModal.WaitForAsync(WaitVisible);
             await confirmModal.Locator(".btn-submit").ClickAsync();
-            await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+
+            await page.Locator(".modal-overlay").WaitForAsync(WaitHidden);
+            await card.WaitForAsync(new() { State = WaitForSelectorState.Hidden, Timeout = 10_000 });
         }
 
         //--- 1
@@ -187,6 +211,7 @@ namespace FrontendTest
         {
             await OpenAddProfessorModal();
             await page!.Locator(".modal-close").ClickAsync();
+            await page.Locator(".modal-overlay").WaitForAsync(WaitHidden);
             await Assertions.Expect(page.Locator(".modal-overlay")).ToBeHiddenAsync();
         }
 
@@ -201,12 +226,12 @@ namespace FrontendTest
                 await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
                 await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
 
-                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+                await page.Locator(".modal-overlay").WaitForAsync(WaitHidden);
 
-                await Assertions.Expect(
-                    page.Locator(".course-card")
-                        .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" }))
-                    .ToBeVisibleAsync();
+                var newCard = page.Locator(".course-card")
+                                  .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" });
+                await newCard.WaitForAsync(WaitVisible);
+                await Assertions.Expect(newCard).ToBeVisibleAsync();
             }
             finally
             {
@@ -259,7 +284,6 @@ namespace FrontendTest
 
             bool isInvalid = !await page.GetByPlaceholder(new Regex(".*email@.*"))
                                         .EvaluateAsync<bool>("el => el.validity.valid");
-
             Assert.That(isInvalid, Is.True);
         }
 
@@ -272,13 +296,14 @@ namespace FrontendTest
             await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
 
             await page!.Locator(".modal-overlay").Locator(".btn-cancel").ClickAsync();
+            await page.Locator(".modal-overlay").WaitForAsync(WaitHidden);
 
             await Assertions.Expect(page.Locator(".modal-overlay")).ToBeHiddenAsync();
 
             await Assertions.Expect(
                 page.Locator(".course-card")
                     .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" }))
-                .ToHaveCountAsync(0, new() { Timeout = 2000 });
+                .ToHaveCountAsync(0, new() { Timeout = 5_000 });
         }
 
         //--- 12
@@ -291,10 +316,11 @@ namespace FrontendTest
                 await OpenAddProfessorModal();
                 await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
                 await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
-                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+                await page.Locator(".modal-overlay").WaitForAsync(WaitHidden);
 
                 var card = page.Locator(".course-card")
                                .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" });
+                await card.WaitForAsync(WaitVisible);
 
                 await Assertions.Expect(card.Locator(".course-professor")).ToContainTextAsync(profEmail);
                 await Assertions.Expect(card.Locator(".course-semester")).ToContainTextAsync(profPhone);
@@ -316,12 +342,14 @@ namespace FrontendTest
                 await OpenAddProfessorModal();
                 await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
                 await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
-                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+                await page.Locator(".modal-overlay").WaitForAsync(WaitHidden);
 
-                await page.Locator(".course-card")
-                          .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" })
-                          .ClickAsync();
+                var card = page.Locator(".course-card")
+                               .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" });
+                await card.WaitForAsync(WaitVisible);
+                await card.ClickAsync();
 
+                await page.Locator(".modal-overlay").WaitForAsync(WaitVisible);
                 await Assertions.Expect(page.Locator(".modal-title")).ToHaveTextAsync("Edit Professor Data");
             }
             finally
@@ -342,22 +370,27 @@ namespace FrontendTest
                 await OpenAddProfessorModal();
                 await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
                 await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
-                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+                await page.Locator(".modal-overlay").WaitForAsync(WaitHidden);
 
-                await page.Locator(".course-card")
-                          .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" })
-                          .ClickAsync();
-                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible });
+                var card = page.Locator(".course-card")
+                               .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" });
+                await card.WaitForAsync(WaitVisible);
+                await card.ClickAsync();
 
-                await page.GetByPlaceholder(new Regex("First name")).FillAsync(editedFirstName);
+                await page.Locator(".modal-overlay").WaitForAsync(WaitVisible);
+
+                var firstNameInput = page.GetByPlaceholder(new Regex("First name"));
+                await Assertions.Expect(firstNameInput).ToBeEditableAsync(new() { Timeout = 5_000 });
+                await firstNameInput.FillAsync(editedFirstName);
                 await page.GetByPlaceholder(new Regex("Last name")).FillAsync(editedLastName);
-                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Save changes.*") }).ClickAsync();
-                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
 
-                await Assertions.Expect(
-                    page.Locator(".course-card")
-                        .Filter(new() { HasTextString = $"Prof. {editedFirstName} {editedLastName}" }))
-                    .ToBeVisibleAsync();
+                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Save changes.*") }).ClickAsync();
+                await page.Locator(".modal-overlay").WaitForAsync(WaitHidden);
+
+                var updatedCard = page.Locator(".course-card")
+                                      .Filter(new() { HasTextString = $"Prof. {editedFirstName} {editedLastName}" });
+                await updatedCard.WaitForAsync(WaitVisible);
+                await Assertions.Expect(updatedCard).ToBeVisibleAsync();
             }
             finally
             {
@@ -373,7 +406,11 @@ namespace FrontendTest
             await OpenAddProfessorModal();
             await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
             await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
-            await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+            await page.Locator(".modal-overlay").WaitForAsync(WaitHidden);
+
+            await page.Locator(".course-card")
+                      .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" })
+                      .WaitForAsync(WaitVisible);
 
             await DeleteProfessor(profFirstName, profLastName);
 
@@ -393,19 +430,23 @@ namespace FrontendTest
                 await OpenAddProfessorModal();
                 await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
                 await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
-                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+                await page.Locator(".modal-overlay").WaitForAsync(WaitHidden);
 
                 var card = page.Locator(".course-card")
                                .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" });
-
+                await card.WaitForAsync(WaitVisible);
                 await card.HoverAsync();
-                await card.Locator(".course-action-btn").Nth(1).ClickAsync();
+
+                var deleteActionBtn = card.Locator(".course-action-btn").Nth(1);
+                await deleteActionBtn.WaitForAsync(WaitVisible);
+                await deleteActionBtn.ClickAsync();
 
                 var confirmModal = page.Locator(".modal-overlay");
-                await confirmModal.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+                await confirmModal.WaitForAsync(WaitVisible);
                 await confirmModal.Locator(".btn-cancel").ClickAsync();
-                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+                await page.Locator(".modal-overlay").WaitForAsync(WaitHidden);
 
+                await card.WaitForAsync(WaitVisible);
                 await Assertions.Expect(card).ToBeVisibleAsync();
             }
             finally
@@ -428,23 +469,20 @@ namespace FrontendTest
                 await OpenAddProfessorModal();
                 await FillProfessorModal(profFirstName, profLastName, profEmail, profPhone, profOffice);
                 await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
-                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+                await page.Locator(".modal-overlay").WaitForAsync(WaitHidden);
+                await page.Locator(".course-card")
+                          .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" })
+                          .WaitForAsync(WaitVisible);
 
                 await OpenAddProfessorModal();
                 await FillProfessorModal(secondFirstName, secondLastName, secondEmail, "0621234567", "202");
                 await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Add professor.*") }).ClickAsync();
-                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+                await page.Locator(".modal-overlay").WaitForAsync(WaitHidden);
+                await page.Locator(".course-card")
+                          .Filter(new() { HasTextString = $"Prof. {secondFirstName} {secondLastName}" })
+                          .WaitForAsync(WaitVisible);
 
-                await Assertions.Expect(page.Locator(".course-card")).ToHaveCountAsync(2, new() { Timeout = 10000 });
-
-                await Assertions.Expect(
-                    page.Locator(".course-card")
-                        .Filter(new() { HasTextString = $"Prof. {profFirstName} {profLastName}" }))
-                    .ToBeVisibleAsync();
-                await Assertions.Expect(
-                    page.Locator(".course-card")
-                        .Filter(new() { HasTextString = $"Prof. {secondFirstName} {secondLastName}" }))
-                    .ToBeVisibleAsync();
+                await Assertions.Expect(page.Locator(".course-card")).ToHaveCountAsync(2, new() { Timeout = 10_000 });
 
                 await Assertions.Expect(
                     page.Locator(".course-card")

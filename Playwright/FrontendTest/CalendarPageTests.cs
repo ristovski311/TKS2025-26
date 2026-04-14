@@ -97,13 +97,17 @@ namespace FrontendTest
             await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
 
             await page.Locator(".main-nav-item-calendar").ClickAsync();
+
             await Assertions.Expect(page.Locator(".page-title")).ToHaveTextAsync("Calendar");
+            await page.Locator(".calendar-grid").WaitForAsync(new() { State = WaitForSelectorState.Visible });
         }
 
         [TearDown]
         public async Task Cleanup()
         {
             await page!.GotoAsync("http://127.0.0.1:5500/index.html");
+
+            await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
             var deleteBtn = page.Locator(".delete-button");
             try
@@ -131,7 +135,10 @@ namespace FrontendTest
             await page!.Locator("[name='title']").FillAsync(title);
             await page.Locator("[name='type']").FillAsync(type);
             await page.Locator("[name='description']").FillAsync(description);
+
+            await page.Locator("[name='date']").FillAsync("");
             await page.Locator("[name='date']").FillAsync(date);
+
             await page.Locator("[name='grade']").FillAsync(grade);
 
             await page.WaitForSelectorAsync("select[name='courseId'] option:nth-child(2)",
@@ -141,16 +148,15 @@ namespace FrontendTest
 
         public async Task OpenAddTaskModal()
         {
-            await page!.Locator(".fab").ClickAsync();
+            await page!.Locator(".calendar-grid").WaitForAsync(new() { State = WaitForSelectorState.Visible });
+            await page.Locator(".fab").ClickAsync();
             await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible });
         }
 
         public async Task DeleteTask(string title)
         {
-            // Wait for any ongoing re-renders to settle before checking modals
             await page!.Locator(".calendar-grid").WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
-            // Close any modals that are still open
             int modalCount = await page.Locator(".modal-overlay").CountAsync();
             for (int i = 0; i < modalCount; i++)
             {
@@ -165,6 +171,8 @@ namespace FrontendTest
                 catch (TimeoutException) { break; }
             }
 
+            await page.Locator(".calendar-grid").WaitForAsync(new() { State = WaitForSelectorState.Visible });
+
             await page.Locator(".task-pill").Filter(new() { HasTextString = title }).ClickAsync();
             await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible });
             await page.Locator(".btn-remove").ClickAsync();
@@ -172,6 +180,9 @@ namespace FrontendTest
             var confirmModal = page.Locator(".modal-overlay").Last;
             await confirmModal.Locator(".btn-submit").ClickAsync();
             await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+
+            await Assertions.Expect(page.Locator(".task-pill").Filter(new() { HasTextString = title }))
+                            .ToHaveCountAsync(0);
         }
 
         //--- 1
@@ -244,7 +255,12 @@ namespace FrontendTest
         public async Task CalendarPage_TodayButtonReturnsToCurrentMonth()
         {
             await page!.Locator(".calendar-nav-btn").Nth(1).ClickAsync();
+
+            await Assertions.Expect(page.Locator(".calendar-grid"))
+                            .ToBeVisibleAsync();
             await page.Locator(".calendar-nav-btn").Nth(1).ClickAsync();
+            await Assertions.Expect(page.Locator(".calendar-grid"))
+                            .ToBeVisibleAsync();
 
             await page.Locator(".calendar-today-btn").ClickAsync();
 
@@ -329,9 +345,14 @@ namespace FrontendTest
         public async Task AddTask_Cancel()
         {
             await OpenAddTaskModal();
-            await page!.Locator("[name='title']").FillAsync(taskTitle);
+
+            await page!.WaitForSelectorAsync("select[name='courseId'] option:nth-child(2)",
+                new PageWaitForSelectorOptions { State = WaitForSelectorState.Attached });
+
+            await page.Locator("[name='title']").FillAsync(taskTitle);
             await page.Locator("[name='type']").FillAsync(taskType);
             await page.Locator("[name='description']").FillAsync(taskDescription);
+            await page.Locator("[name='date']").FillAsync("");
             await page.Locator("[name='date']").FillAsync(taskDate);
             await page.Locator("[name='grade']").FillAsync(taskGrade);
 
@@ -355,6 +376,9 @@ namespace FrontendTest
                 await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create task.*") }).ClickAsync();
                 await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
 
+                await Assertions.Expect(page.Locator(".task-pill").Filter(new() { HasTextString = taskTitle }))
+                                .ToBeVisibleAsync();
+
                 await page.Locator(".task-pill").Filter(new() { HasTextString = taskTitle }).ClickAsync();
 
                 await Assertions.Expect(page.Locator(".modal-title")).ToHaveTextAsync("Edit Task");
@@ -373,12 +397,15 @@ namespace FrontendTest
             string editedTitle = "Edited Task Title";
             try
             {
-                await Assertions.Expect(page.Locator("#loading-overlay")).ToBeHiddenAsync();
+                await Assertions.Expect(page!.Locator("#loading-overlay")).ToBeHiddenAsync();
 
                 await OpenAddTaskModal();
                 await FillTaskModal(taskTitle, taskType, taskDescription, taskDate, taskGrade);
-                await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create task.*") }).ClickAsync();
+                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create task.*") }).ClickAsync();
                 await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+
+                await Assertions.Expect(page.Locator(".task-pill").Filter(new() { HasTextString = taskTitle }))
+                                .ToBeVisibleAsync();
 
                 await page.Locator(".task-pill").Filter(new() { HasTextString = taskTitle }).ClickAsync();
                 await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible });
@@ -409,6 +436,9 @@ namespace FrontendTest
                 await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create task.*") }).ClickAsync();
                 await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
 
+                await Assertions.Expect(page.Locator(".task-pill").Filter(new() { HasTextString = taskTitle }))
+                                .ToBeVisibleAsync();
+
                 await page.Locator(".task-pill").Filter(new() { HasTextString = taskTitle }).ClickAsync();
                 await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
@@ -435,6 +465,9 @@ namespace FrontendTest
             await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create task.*") }).ClickAsync();
             await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
 
+            await Assertions.Expect(page.Locator(".task-pill").Filter(new() { HasTextString = taskTitle }))
+                            .ToBeVisibleAsync();
+
             await DeleteTask(taskTitle);
 
             await Assertions.Expect(page.Locator(".task-pill").Filter(new() { HasTextString = taskTitle }))
@@ -452,15 +485,22 @@ namespace FrontendTest
             await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create task.*") }).ClickAsync();
             await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
 
+            await Assertions.Expect(page.Locator(".task-pill").Filter(new() { HasTextString = taskTitle }))
+                            .ToBeVisibleAsync();
+
             await page.Locator(".task-pill").Filter(new() { HasTextString = taskTitle }).ClickAsync();
             await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible });
             await page.Locator(".btn-pass").ClickAsync();
 
             var completeModal = page.Locator(".modal-overlay").Nth(1);
+
+            await completeModal.WaitForAsync(new() { State = WaitForSelectorState.Visible });
             await completeModal.Locator(".form-input").FillAsync(earnedGrade.ToString());
             await completeModal.Locator(".btn-submit").ClickAsync();
 
             await Assertions.Expect(page.Locator(".modal-overlay")).ToHaveCountAsync(0, new() { Timeout = 10000 });
+
+            await page.Locator(".calendar-grid").WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
             await Assertions.Expect(page.Locator(".task-completed")
                                         .Filter(new() { HasTextString = taskTitle }))
@@ -479,12 +519,19 @@ namespace FrontendTest
                 await page!.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create task.*") }).ClickAsync();
                 await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
 
+                await Assertions.Expect(page.Locator(".task-pill").Filter(new() { HasTextString = taskTitle }))
+                                .ToBeVisibleAsync();
+
                 await page.Locator(".task-pill").Filter(new() { HasTextString = taskTitle }).ClickAsync();
                 await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible });
                 await page.Locator(".btn-pass").ClickAsync();
 
                 var completeModal = page.Locator(".modal-overlay").Nth(1);
+
+                await completeModal.WaitForAsync(new() { State = WaitForSelectorState.Visible });
                 await completeModal.Locator(".btn-cancel").ClickAsync();
+
+                await completeModal.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
 
                 await Assertions.Expect(page.Locator(".task-pill.task-completed")
                                            .Filter(new() { HasTextString = taskTitle }))
