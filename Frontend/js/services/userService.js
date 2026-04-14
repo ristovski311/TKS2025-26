@@ -11,7 +11,7 @@ export async function loginUser(email, password) {
     });
 
     if (!response.ok) {
-        throw new Error("Neuspesan login");
+        throw new Error("Login failed");
     }
 
     const data = await response.json();
@@ -32,7 +32,7 @@ export async function registerUser(userData) {
     });
 
     if (!response.ok) {
-        throw new Error("Registracija nije uspela");
+        throw new Error("Registration failed");
     }
 
     return await response.json();

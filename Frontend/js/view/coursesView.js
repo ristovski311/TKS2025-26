@@ -884,7 +884,7 @@
                 hideOverlay();
                 renderCourses();
             } catch (err) {
-                alert("Greška pri polaganju ispita: " + err.message);
+                alert("Error passing exam: " + err.message);
             }
         });
         
