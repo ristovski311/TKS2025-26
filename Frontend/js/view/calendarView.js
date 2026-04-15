@@ -370,7 +370,7 @@ async function createTaskForm(task = null) {
                     try{
                         await deleteTask(task.id);
                         document.querySelector(".modal-overlay").remove();
-                        renderCalendar();
+                        await renderCalendar();
                     }
                     finally
                     {
@@ -395,7 +395,10 @@ async function createTaskForm(task = null) {
     });
     actions.append(cancelBtn, submitBtn);
     
-    form.append(titleGroup, typeGroup, descriptionGroup, dateGroup, gradeGroup, courseGroup, footer, actions);
+    //form.append(titleGroup, typeGroup, descriptionGroup, dateGroup, gradeGroup, courseGroup, footer, actions);
+    const dateGradeRow = createElement("div", "form-row");
+    dateGradeRow.append(dateGroup, gradeGroup);
+    form.append(titleGroup, typeGroup, descriptionGroup, dateGradeRow, courseGroup, footer, actions);
     
     return form;
 }
@@ -427,7 +430,7 @@ async function handleTaskSubmit(e, task) {
         document.querySelector(".modal-overlay").remove();
         
         hideOverlay();
-        renderCalendar();
+        await renderCalendar();
     } catch (err) {
         alert("Failed to create task: " + err.message);
     }
@@ -462,7 +465,7 @@ async function openFinishTaskModal(task) {
             overlay.remove();
             const editModal = document.querySelector(".modal-overlay");
             if (editModal) editModal.remove();
-            renderCalendar();
+            await renderCalendar();
         } catch (err) {
             alert("Error completing task: " + err.message);
         }

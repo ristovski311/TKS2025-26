@@ -403,27 +403,22 @@ namespace FrontendTest
                 await OpenAddTaskModal();
                 await FillTaskModal(taskTitle, taskType, taskDescription, taskDate, taskGrade);
                 await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Create task.*") }).ClickAsync();
-                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
-
+                
+                await page.Locator(".loading-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+                await page.Locator(".calendar-container").WaitForAsync(new() { State = WaitForSelectorState.Attached });
                 await Assertions.Expect(page.Locator(".task-pill").Filter(new() { HasTextString = taskTitle }))
                                 .ToBeVisibleAsync();
 
                 await page.Locator(".task-pill").Filter(new() { HasTextString = taskTitle }).ClickAsync();
-                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
-                await page.Locator("[name='title']").FillAsync(editedTitle);
+                await FillTaskModal(editedTitle, taskType, taskDescription, taskDate, taskGrade);
 
                 var modal = page.Locator(".modal-overlay");
                 var saveBtn = modal.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Save changes.*") });
-                await saveBtn.ScrollIntoViewIfNeededAsync();
                 await saveBtn.ClickAsync();
 
-                await page.Locator(".loading-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible});
                 await page.Locator(".loading-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
-                await modal.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
-                //Dva puta mora da se saceka na loading overlay dok ucita kalendar 
-                await page.Locator(".loading-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible});
-                await page.Locator(".loading-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+                await page.Locator(".calendar-container").WaitForAsync(new() { State = WaitForSelectorState.Attached});
 
                 await Assertions.Expect(page.Locator(".task-pill").Filter(new() { HasTextString = editedTitle }))
                                 .ToBeVisibleAsync();
