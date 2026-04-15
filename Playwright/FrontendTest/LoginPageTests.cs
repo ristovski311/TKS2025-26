@@ -123,7 +123,7 @@ namespace FrontendTest
                 await page.Locator(".toggle-password").ClickAsync();
                 await page.Locator(".auth-button").ClickAsync();
 
-                await Assertions.Expect(page.Locator(".auth-error")).ToHaveTextAsync(new Regex("Neuspesan login"));
+                await Assertions.Expect(page.Locator(".auth-error")).ToHaveTextAsync(new Regex("Login failed"));
             }
             finally
             {
@@ -144,7 +144,7 @@ namespace FrontendTest
                 await page.Locator(".login-email").FillAsync(userMail);
                 await page.Locator(".auth-button").ClickAsync();
 
-                await Assertions.Expect(page.Locator(".auth-error")).ToHaveTextAsync(new Regex("Neuspesan login"));
+                await Assertions.Expect(page.Locator(".auth-error")).ToHaveTextAsync(new Regex("Login failed"));
 
             }
             finally
@@ -165,7 +165,7 @@ namespace FrontendTest
             {
                 await page.Locator(".auth-button").ClickAsync(new() { Force = true });
                 await Task.Delay(500);
-                await Assertions.Expect(page.Locator(".auth-error")).ToHaveTextAsync(new Regex(".*Neuspesan login.*"));
+                await Assertions.Expect(page.Locator(".auth-error")).ToHaveTextAsync(new Regex(".*Login failed.*"));
             }
             finally
             {

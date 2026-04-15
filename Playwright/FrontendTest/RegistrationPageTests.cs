@@ -40,7 +40,7 @@ namespace FrontendTest
             browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
                 Headless = false,
-                SlowMo = 200
+                SlowMo = 100
             });
 
             context = await browser.NewContextAsync();
