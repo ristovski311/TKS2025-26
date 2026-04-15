@@ -122,29 +122,9 @@ namespace FrontendTest
         {
             await page!.Locator(".courses-grid").WaitForAsync(WaitVisible);
 
-            while (await page.Locator(".modal-overlay").CountAsync() > 0)
-            {
-                var overlay = page.Locator(".modal-overlay").Last;
-                var closeBtn = overlay.Locator(".modal-close");
-
-                bool closeVisible = false;
-                try
-                {
-                    await closeBtn.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 2_000 });
-                    closeVisible = true;
-                }
-                catch (TimeoutException) { }
-
-                if (closeVisible)
-                {
-                    await closeBtn.ClickAsync();
-                    await overlay.WaitForAsync(new() { State = WaitForSelectorState.Hidden, Timeout = 5_000 });
-                }
-                else
-                {
-                    break;
-                }
-            }
+            var modal = page!.Locator(".modal-overlay");
+            if (await modal.IsVisibleAsync())
+                await page.Locator(".modal-close").ClickAsync();
 
             string fullName = $"Prof. {firstName} {lastName}";
             var card = page.Locator(".course-card").Filter(new() { HasTextString = fullName });

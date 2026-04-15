@@ -412,8 +412,18 @@ namespace FrontendTest
                 await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
                 await page.Locator("[name='title']").FillAsync(editedTitle);
-                await page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Save changes.*") }).ClickAsync();
-                await page.Locator(".modal-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+
+                var modal = page.Locator(".modal-overlay");
+                var saveBtn = modal.GetByRole(AriaRole.Button, new() { NameRegex = new Regex(".*Save changes.*") });
+                await saveBtn.ScrollIntoViewIfNeededAsync();
+                await saveBtn.ClickAsync();
+
+                await page.Locator(".loading-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible});
+                await page.Locator(".loading-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+                await modal.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+                //Dva puta mora da se saceka na loading overlay dok ucita kalendar 
+                await page.Locator(".loading-overlay").WaitForAsync(new() { State = WaitForSelectorState.Visible});
+                await page.Locator(".loading-overlay").WaitForAsync(new() { State = WaitForSelectorState.Hidden });
 
                 await Assertions.Expect(page.Locator(".task-pill").Filter(new() { HasTextString = editedTitle }))
                                 .ToBeVisibleAsync();
